@@ -36,27 +36,29 @@ public class KantabClient {
         Task.Run(ReceiveLoop, _tkn.Token);
     }
 
+    const int MEMORY_BUFFER_LENGTH = 32;
+
     async void ReceiveLoop()
     {
         var loopToken = _tkn.Token;
-        MemoryStream outputStream = null;
-        WebSocketReceiveResult receiveResult = null;
-        byte[] buffer = new byte[32];
+        MemoryStream outputStream = new MemoryStream(32);
+        byte[] buffer = new byte[MEMORY_BUFFER_LENGTH];
         try
         {
             while (!loopToken.IsCancellationRequested)
             {
-                outputStream = new MemoryStream(32);
+                WebSocketReceiveResult receiveResult;
                 do
                 {
                     receiveResult = await _clientSocket.ReceiveAsync(new ArraySegment<byte>(buffer), loopToken);
                     if (receiveResult.MessageType != WebSocketMessageType.Close)
-                        outputStream.Write(buffer, 0, receiveResult.Count);
+                        await outputStream.WriteAsync(buffer, 0, receiveResult.Count, loopToken);
                 } while (!receiveResult.EndOfMessage);
 
                 if (receiveResult.MessageType == WebSocketMessageType.Close) break;
                 outputStream.Position = 0;
                 ProcessKantabMessage(outputStream.ToArray());
+                await outputStream.WriteAsync(new byte[MEMORY_BUFFER_LENGTH], 0, MEMORY_BUFFER_LENGTH, loopToken);
             }
         }
         catch (TaskCanceledException) { OnClientDisconnect?.Invoke(this, true); }

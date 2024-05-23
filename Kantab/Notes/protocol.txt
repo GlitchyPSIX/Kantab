@@ -18,7 +18,7 @@ S 01: Ping
 [len: 2] 
 ## 00
 
-Heartbeat message. Client is expected to respond with "C 01: Pong".
+Heartbeat message. Client MUST respond to this with "C 01: Pong".
 If 5 heartbeats miss, the client is disconnected.
 
 --------------------------------------------------------------------
@@ -28,7 +28,7 @@ S 02: Hello
 [len: 2] 
 ## 00
 
-Message sent to the client upon connecting. Client is expected to respond with "C 02: Hello" to signify the client is ready to start accepting more Kantab-specific messages. This marks the client as active, and starts the ping timer for the client.
+Message sent to the client upon connecting. Client MUST respond with "C 02: Hello" to signify the client is ready to start accepting more Kantab-specific messages. This marks the client as active, and starts the ping timer for the client.
 
 Clients failing to return "02: Hello" within 3 seconds are disconnected.
 
@@ -39,7 +39,7 @@ S 03: Capabilities
 [len: 2] 
 ## [TT]
 
-TT (enum, byte): Bitfield describing the features the server supports. This bitfield is consistent with the enum "ClientFeatures". Client is expected to respond with "C 03: Capabilities", although the client may respond at any time after receiving this message as long as it is still responding to the heartbeat by "S 01: Ping".
+TT (enum, byte): Bitfield describing the features the server supports. This bitfield is consistent with the enum "ClientFeatures". Client MAY respond with "C 03: Capabilities". The client MAY respond at any time after receiving this message as long as it is still responding to the heartbeat by "S 01: Ping".
 
 --------------------------------------------------------------------
 
@@ -73,7 +73,7 @@ XX, YY: Refer to S 04-00
 PP (float): Pressure (normalized, between 0-1, 0 being no pressure and 1 being max pressure)
 TT (float): Tilt (in degrees, normal values from -180 to 180)
 
-NOTE ABOUT TILT: Tilt may be exaggerated by drivers, but from research most tilt detection does not exceed 80 degrees (pen angles shouldn't be sharper than that.)
+NOTE ABOUT TILT: It is possible that the returned value is exaggerated by drivers, but from research most tilt detection does not exceed 80 degrees (pen angles shouldn't be sharper than that.)
 
 --------------------------------------------------------------------
 
@@ -83,7 +83,7 @@ S FD: Consider Refreshing Assets
 ## 00
 
 Sent to the client when the server thinks it's prudent to refresh the assets provided by its webserver.
-The client may or may not respect this message, either updating automatically or requesting the user to reload.
+The client SHOULD respect this message and refresh assets, either updating automatically or requesting the user to reload.
 
 --------------------------------------------------------------------
 
@@ -93,6 +93,7 @@ S FE: Whoops
 ## 00
 
 Sent to the client when there's a protocol violation (unknown opcode, wrong values, etc).
+If the client receives this message as a response to a sent command, the client MUST NOT repeat the same request.
 Too many "whoops" between heartbeats and the client is disconnected.
 
 --------------------------------------------------------------------
@@ -130,7 +131,7 @@ C 02: Hello
 [len: 2] 
 ## 00
 
-Sent to the server to signify the client is ready to accept messages, sent after "S 02: Hello". Should be sent immediately after connection.
+Sent to the server to signify the client is ready to accept messages, sent after "S 02: Hello". MUST be sent immediately after connection.
 
 --------------------------------------------------------------------
 
@@ -153,7 +154,7 @@ C 04: Pen Information
 E (boolean, bit inside byte): Extended Information
 Extended Information specifies whether this information includes extra tablet attributes such as pressure and tilt.
 
-The structure is the same as in "S 04: Pen Information", but the client may only send this when they are a Relay Authority (RELAY_AUTHORITY flag given when connecting), otherwise server will respond with "S FE: Whoops".
+The structure is the same as in "S 04: Pen Information", but the client MUST only send this when they are a Relay Authority (RELAY_AUTHORITY flag given when connecting), otherwise server will respond with "S FE: Whoops".
 
 --------------------------------------------------------------------
 
@@ -181,3 +182,4 @@ This enum is shared between client and server and serves to define what the serv
 0000 0001 = ABSOLUTE_POSITIONING (Position will be returned in raw coordinates rather than normalized coordinates.)
 0000 0010 = EXTENDED_DATA (Along with Position, Pen Pressure and Tilt are sent.)
 0000 0100 = RELAY_AUTHORITY (This client wants to send positions to the server to relay rather than to receive them.)
+Servers MAY implement RELAY_AUTHORITY functionality.

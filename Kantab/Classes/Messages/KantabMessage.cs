@@ -2,7 +2,5 @@
 
 public abstract class KantabMessage
 {
-
-
     public abstract byte[] ToBytes();
 }
