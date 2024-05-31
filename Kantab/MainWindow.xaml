@@ -6,9 +6,11 @@
         xmlns:local="clr-namespace:Kantab"
         mc:Ignorable="d"
         Title="MainWindow" Height="289" Width="524">
-    <Grid>
+    <Grid HorizontalAlignment="Center">
         <Label Content="cursor pos:"/>
-        <Label Content="{Binding Path=MousePosition}" Margin="68,0,-68,0"/>
+
+        <Label Content="{Binding Path=MousePosition}" Margin="68,0,393,248"/>
+        <Button Content="turn on server" HorizontalAlignment="Left" VerticalAlignment="Top" Height="28" Width="88" Margin="0,41,0,0" Click="Button_Click"/>
     </Grid>
 
 

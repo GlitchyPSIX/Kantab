@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Kantab.Classes;
 using Kantab.Classes.ViewModels;
 
 namespace Kantab
@@ -19,12 +20,18 @@ namespace Kantab
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
-    {
+    public partial class MainWindow : Window {
+        private KantabServer ks;
         public MainWindow() {
             PointerData dt = new PointerData();
             DataContext = dt;
             InitializeComponent();
+            ks = new KantabServer(null);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            ks.BeginHttpServer();
         }
     }
 }

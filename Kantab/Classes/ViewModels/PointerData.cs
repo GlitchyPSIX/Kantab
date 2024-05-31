@@ -19,7 +19,6 @@ public class PointerData : ObservableObject
     }
 
     void pollingTimerTick(object? sender) {
-        Console.WriteLine("Tick");
         MousePosition = CursorData.CursorPosition(Vector2.Zero);
         OnPropertyChanged(nameof(MousePosition));
     }

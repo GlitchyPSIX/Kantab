@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net.WebSockets;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using Kantab.Classes.Extensions;
+using Kantab.Classes.Messages;
 using Kantab.Classes.Messages.Common;
 using Kantab.Enums;
 using Timer = System.Timers.Timer;
@@ -12,6 +14,8 @@ using Timer = System.Timers.Timer;
 namespace Kantab.Classes; 
 
 public class KantabClient {
+
+    private KantabServer _myServer;
     private WebSocket _clientSocket;
     public ClientFeatures Features;
 
@@ -26,9 +30,10 @@ public class KantabClient {
 
     private CancellationTokenSource _tkn;
 
-    public KantabClient(WebSocket clientSocket) {
+    public KantabClient(KantabServer server, WebSocket clientSocket) {
+        _myServer = server;
         _clientSocket = clientSocket;
-        _heartbeatTimer = new Timer(0);
+        _heartbeatTimer = new Timer(1000);
         _heartbeatTimer.Stop();
         _heartbeatTimer.Elapsed += OnHeartbeatTick;
         _tkn = new CancellationTokenSource();
@@ -48,6 +53,7 @@ public class KantabClient {
             while (!loopToken.IsCancellationRequested)
             {
                 WebSocketReceiveResult receiveResult;
+                outputStream.Position = 0;
                 do
                 {
                     receiveResult = await _clientSocket.ReceiveAsync(new ArraySegment<byte>(buffer), loopToken);
@@ -57,8 +63,8 @@ public class KantabClient {
 
                 if (receiveResult.MessageType == WebSocketMessageType.Close) break;
                 outputStream.Position = 0;
-                ProcessKantabMessage(outputStream.ToArray());
-                await outputStream.WriteAsync(new byte[MEMORY_BUFFER_LENGTH], 0, MEMORY_BUFFER_LENGTH, loopToken);
+                ProcessKantabMessage(new (outputStream.ToArray(), 0, receiveResult.Count));
+                await outputStream.WriteAsync((new byte[MEMORY_BUFFER_LENGTH]).AsMemory(0, MEMORY_BUFFER_LENGTH), loopToken);
             }
         }
         catch (TaskCanceledException) { OnClientDisconnect?.Invoke(this, true); }
@@ -69,8 +75,16 @@ public class KantabClient {
         }
     }
 
-    private void ProcessKantabMessage(byte[] buf) {
-        // NEXT: Processing of client messages
+    private void ProcessKantabMessage(ArraySegment<byte> buf) {
+       Console.WriteLine(string.Join(" ", buf.Select(x => x.ToString("X2")).ToArray()));
+    }
+    
+    public async void SendMessage(KantabMessage message) {
+        if (_clientSocket.State != WebSocketState.Open) return;
+        if (_ready) return;
+
+        await _clientSocket.SendKantabMessage(message);
+
     }
 
     private async void OnHeartbeatTick(object? sender, ElapsedEventArgs args) {
@@ -78,6 +92,6 @@ public class KantabClient {
         if (_ready) return;
 
         _accumulatedWhoops = 0;
-        await _clientSocket.SendAsync(new ArraySegment<byte>(new PingMessage().ToBytes()), WebSocketMessageType.Binary, true, CancellationToken.None);
+        await _clientSocket.SendKantabMessage(new PingMessage());
     }
 }
