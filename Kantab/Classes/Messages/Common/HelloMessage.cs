@@ -6,4 +6,5 @@ public class HelloMessage : KantabMessage
     {
         return new byte[] { 02, 00 };
     }
+
 }

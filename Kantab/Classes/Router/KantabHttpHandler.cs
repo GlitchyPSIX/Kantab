@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -11,10 +12,10 @@ using Kantab.Classes.Router.Middleware;
 namespace Kantab.Classes.Router; 
 
 public class KantabHttpHandler {
-    private Dictionary<Regex, Func<KantabHttpContext, Task>[]> _routeMappings = new();
+    private Dictionary<Tuple<Regex, string>, Func<KantabHttpContext, Task>[]> _routeMappings = new();
 
     public void Init() {
-        _routeMappings.Add(new Regex(@"^assets/.*$"), new Func<KantabHttpContext, Task>[] {
+        _routeMappings.Add(new (new Regex(@"^assets/.*$"), "GET"), new Func<KantabHttpContext, Task>[] {
             async (kCtx) => {
                 await KantabHttpFileServer.Run(kCtx,
                     Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "Assets"),
@@ -22,17 +23,20 @@ public class KantabHttpHandler {
             }
         });
     }
+    
+
 
     public async Task RunHandler(HttpListenerContext ctx) {
         KantabHttpContext kCtx = new(ctx);
         try {
-            KeyValuePair<Regex, Func<KantabHttpContext, Task>[]>? matchedRoute;
+            KeyValuePair<Tuple<Regex, string>, Func<KantabHttpContext, Task>[]>? matchedRoute;
             matchedRoute =
                 _routeMappings.FirstOrDefault(mapping =>
                         // the first regex that matches:
                         // the URL, minus the leading slash (/)
                         // that [1..] is C# 8's Range expression
-                        mapping.Key.IsMatch(ctx.Request.RawUrl[1..]));
+                        // and also: has the same HTTP method
+                        mapping.Key.Item1.IsMatch(ctx.Request.RawUrl[1..]) && mapping.Key.Item2 == ctx.Request.HttpMethod);
 
             if (matchedRoute.Value.Key == null) {
                 // route not found

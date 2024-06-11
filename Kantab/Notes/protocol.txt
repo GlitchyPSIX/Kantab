@@ -45,7 +45,7 @@ TT (enum, byte): Bitfield describing the features the server supports. This bitf
 
 S 04: Pen Information
 
-[len: 10 or 18] 
+[len: 11 or 18] 
 ## 0[E] [?????????????????????]
 
 E (boolean, bit inside byte): Extended Information
@@ -54,11 +54,12 @@ Extended Information specifies whether this information includes extra tablet at
 S 04-00: IF NOT EXTENDED
 ---
 
-[len: 10] 
-## 00 [XX XX XX XX] [YY YY YY YY]
+[len: 11] 
+## 00 [XX XX XX XX] [YY YY YY YY] [PP]
 
 XX (float): X position (normalized between 0-1 or raw position if ABSOLUTE_POSITION is ticked on in Features)
 YY (float): Y position (normalized between 0-1 or raw position if ABSOLUTE_POSITION is ticked on in Features)
+PP (byte) : Pressure, but discrete (0 if not pressed, 1 if pressed)
 
 (0, 0) starts in the TOP LEFT CORNER.
 

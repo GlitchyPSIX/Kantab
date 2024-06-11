@@ -61,7 +61,10 @@ public class KantabClient {
                         await outputStream.WriteAsync(buffer, 0, receiveResult.Count, loopToken);
                 } while (!receiveResult.EndOfMessage);
 
-                if (receiveResult.MessageType == WebSocketMessageType.Close) break;
+                if (receiveResult.MessageType == WebSocketMessageType.Close) {
+                    _tkn.Cancel();
+                    break;
+                }
                 outputStream.Position = 0;
                 ProcessKantabMessage(new (outputStream.ToArray(), 0, receiveResult.Count));
                 await outputStream.WriteAsync((new byte[MEMORY_BUFFER_LENGTH]).AsMemory(0, MEMORY_BUFFER_LENGTH), loopToken);
@@ -76,7 +79,18 @@ public class KantabClient {
     }
 
     private void ProcessKantabMessage(ArraySegment<byte> buf) {
-       Console.WriteLine(string.Join(" ", buf.Select(x => x.ToString("X2")).ToArray()));
+        KantabMessage msg = KantabMessage.FromBytes(buf);
+
+        switch (msg) {
+            case HelloMessage hello:
+            {
+                _ready = true;
+                _heartbeatTimer.Start();
+                break;
+            }
+        }
+
+        Console.WriteLine("Received: " + string.Join(" ", buf.Select(x => x.ToString("X2")).ToArray()));
     }
     
     public async void SendMessage(KantabMessage message) {
@@ -89,7 +103,7 @@ public class KantabClient {
 
     private async void OnHeartbeatTick(object? sender, ElapsedEventArgs args) {
         if (_clientSocket.State != WebSocketState.Open) return;
-        if (_ready) return;
+        if (!_ready) return;
 
         _accumulatedWhoops = 0;
         await _clientSocket.SendKantabMessage(new PingMessage());

@@ -18,7 +18,7 @@ public static class CursorData {
     }
 
     /// <summary>
-    /// Simulates the behavior you'd get from asking World Position to Screen Point from Unity; gets the cursor within an area and returns a value between -1 and 1.
+    /// Simulates the behavior you'd get from asking World Position to Screen Point from Unity; gets the cursor within an area and returns a value between 0 and 1.
     /// </summary>
     /// <param name="topLeftOffset">Top-left point of the "screen area"</param>
     /// <param name="botRightOffset">Bottom-right point of the "screen area"</param>
