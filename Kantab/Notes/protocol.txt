@@ -85,7 +85,8 @@ S FD: Consider Refreshing Assets
 ## 00
 
 Sent to the client when the server thinks it's prudent to refresh the assets provided by its webserver.
-The client SHOULD respect this message and refresh assets, either updating automatically or requesting the user to reload.
+The client SHOULD respect this message and refresh assets or the entire setup (page), either refreshing automatically or
+requesting the user to reload.
 
 --------------------------------------------------------------------
 
@@ -133,7 +134,7 @@ C 02: Hello
 [len: 2] 
 ## 00
 
-Sent to the server to signify the client is ready to accept messages, sent after "S 02: Hello". MUST be sent immediately after connection.
+Sent to the server to signify the client is ready to accept messages, sent after "S 02: Hello". MUST be sent immediately after receiving S 02.
 
 --------------------------------------------------------------------
 
@@ -185,5 +186,5 @@ This enum is shared between client and server and serves to define what the serv
 0000 0001 = ABSOLUTE_POSITIONING (Position will be returned in raw coordinates rather than normalized coordinates. Only used sometimes,
 			mostly by RELAY_AUTHORITY)
 0000 0010 = EXTENDED_DATA (Along with Position, Pen Pressure and Tilt are sent.)
-0000 0100 = RELAY_AUTHORITY (This client wants to send positions to the server to relay rather than to receive them.)
+0000 0100 = RELAY_AUTHORITY (This client wants to send positions for the server to relay rather than to receive them.)
 Servers MAY implement RELAY_AUTHORITY functionality.
