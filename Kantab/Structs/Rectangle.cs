@@ -10,6 +10,8 @@ public struct Rectangle {
 
     public Vector2 Size => new Vector2(Math.Abs(BottomRight.X - TopLeft.X), Math.Abs(BottomRight.Y - TopLeft.Y));
 
+    public bool Empty => Size.X == 0 && Size.Y == 0;
+
     public Rectangle(float x1, float y1, float x2, float y2) {
         TopLeft = new Vector2(x1, y1);
         BottomRight = new Vector2(x2, y2);

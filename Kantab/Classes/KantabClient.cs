@@ -8,7 +8,9 @@ using System.Timers;
 using Kantab.Classes.Extensions;
 using Kantab.Classes.Messages;
 using Kantab.Classes.Messages.Common;
+using Kantab.Classes.PenStateProviders;
 using Kantab.Enums;
+using Kantab.Interfaces;
 using Timer = System.Timers.Timer;
 
 namespace Kantab.Classes; 
@@ -17,10 +19,13 @@ public class KantabClient {
 
     private KantabServer _myServer;
     private WebSocket _clientSocket;
+    private SemaphoreSlim _wsSemaphore = new(1);
     public ClientFeatures Features;
 
-    private bool _ready;
     private int _accumulatedWhoops = 0;
+
+    public bool Ready { get; private set; }
+
     public int MissedHeartbeats { get; private set; } = 0;
 
     private Timer _heartbeatTimer;
@@ -84,7 +89,7 @@ public class KantabClient {
         switch (msg) {
             case HelloMessage hello:
             {
-                _ready = true;
+                Ready = true;
                 _heartbeatTimer.Start();
                 break;
             }
@@ -93,17 +98,24 @@ public class KantabClient {
         Console.WriteLine("Received: " + string.Join(" ", buf.Select(x => x.ToString("X2")).ToArray()));
     }
     
-    public async void SendMessage(KantabMessage message) {
+    public async void SendMessage(KantabMessage message, bool overrideReady = false) {
         if (_clientSocket.State != WebSocketState.Open) return;
-        if (_ready) return;
+        if (!Ready && !overrideReady) return;
 
-        await _clientSocket.SendKantabMessage(message);
+        await _wsSemaphore.WaitAsync();
+        try {
+            await _clientSocket.SendKantabMessage(message);
+        }
+        finally {
+            _wsSemaphore.Release();
+        }
+        
 
     }
 
     private async void OnHeartbeatTick(object? sender, ElapsedEventArgs args) {
         if (_clientSocket.State != WebSocketState.Open) return;
-        if (!_ready) return;
+        if (!Ready) return;
 
         _accumulatedWhoops = 0;
         await _clientSocket.SendKantabMessage(new PingMessage());

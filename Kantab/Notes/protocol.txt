@@ -74,7 +74,8 @@ XX, YY: Refer to S 04-00
 PP (float): Pressure (normalized, between 0-1, 0 being no pressure and 1 being max pressure)
 TT (float): Tilt (in degrees, normal values from -180 to 180)
 
-NOTE ABOUT TILT: It is possible that the returned value is exaggerated by drivers, but from research most tilt detection does not exceed 80 degrees (pen angles shouldn't be sharper than that.)
+NOTE ABOUT TILT: It is possible that the returned value is exaggerated by drivers, but from research most tilt detection does not exceed
+80 degrees (pen angles shouldn't be sharper than that.)
 
 --------------------------------------------------------------------
 
@@ -155,7 +156,8 @@ C 04: Pen Information
 E (boolean, bit inside byte): Extended Information
 Extended Information specifies whether this information includes extra tablet attributes such as pressure and tilt.
 
-The structure is the same as in "S 04: Pen Information", but the client MUST only send this when they are a Relay Authority (RELAY_AUTHORITY flag given when connecting), otherwise server will respond with "S FE: Whoops".
+The structure is the same as in "S 04: Pen Information", but the client MUST only send this when they are a Relay Authority (RELAY_AUTHORITY
+flag given when connecting), otherwise server will respond with "S FE: Whoops".
 
 --------------------------------------------------------------------
 
@@ -180,7 +182,8 @@ CLIENT FEATURES ENUM BITFIELD
 This enum is shared between client and server and serves to define what the server supports and what the client wants from the server.
 
 0000 0000 = No extra features
-0000 0001 = ABSOLUTE_POSITIONING (Position will be returned in raw coordinates rather than normalized coordinates.)
+0000 0001 = ABSOLUTE_POSITIONING (Position will be returned in raw coordinates rather than normalized coordinates. Only used sometimes,
+			mostly by RELAY_AUTHORITY)
 0000 0010 = EXTENDED_DATA (Along with Position, Pen Pressure and Tilt are sent.)
 0000 0100 = RELAY_AUTHORITY (This client wants to send positions to the server to relay rather than to receive them.)
 Servers MAY implement RELAY_AUTHORITY functionality.

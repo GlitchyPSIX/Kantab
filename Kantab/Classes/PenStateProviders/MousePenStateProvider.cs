@@ -26,7 +26,7 @@ namespace Kantab.Classes.PenStateProviders
             return new()
             {
                 Pressure = 1,
-                RawPosition = new Vector2(pt.X, pt.Y)
+                Position = new Vector2(pt.X, pt.Y)
             };
         }
     }

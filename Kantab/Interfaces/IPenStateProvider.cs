@@ -8,7 +8,7 @@ using Kantab.Structs;
 
 namespace Kantab.Interfaces
 {
-    internal interface IPenStateProvider
+    public interface IPenStateProvider
     {
         /// <summary>
         /// Whether this Pen State Provider can change its output to be Extended
