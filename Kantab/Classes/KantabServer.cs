@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Net.WebSockets;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
 using Kantab.Classes.Messages.Common;
 using Kantab.Classes.PenStateProviders;
@@ -24,9 +25,14 @@ public class KantabServer
 
     private KantabHttpHandler _httpHandler;
     private List<KantabClient> _clients = new();
+    public int ConnectedClients => _clients.Count;
+
+    public event EventHandler<KantabClient> ClientConnected;
+    public event EventHandler<KantabClient> ClientDisconnected;
 
     private KantabSettings _loadedSettings;
     public IPenStateProvider PenStateProvider = new MousePenStateProvider();
+    private Task _httpServerTask;
 
     private System.Timers.Timer _positionFetchTimer;
 
@@ -38,20 +44,23 @@ public class KantabServer
         _positionFetchTimer = new();
 
         if (_loadedSettings.ScreenRegion.Empty) _loadedSettings.ScreenRegion = new Rectangle(1920, 0, 1920*2, 1080);
-
         _positionFetchTimer.Elapsed += BroadcastPenState;
         _positionFetchTimer.Interval = fetchRate;
-        _positionFetchTimer.Start();
     }
 
-    internal async void BeginHttpServer()
+    public void Start() {
+        _positionFetchTimer.Start();
+        Task.Run(BeginHttpServer);
+    }
+
+    private async Task BeginHttpServer()
     {
         _listener = new HttpListener();
         _httpHandler = new KantabHttpHandler();
         _httpHandler.Init();
         _listener.Prefixes.Add(_prefix);
         _listener.Start();
-        Console.WriteLine("kantab server started");
+
         while (true)
         {
             HttpListenerContext httpCtx = await _listener.GetContextAsync();
@@ -75,8 +84,6 @@ public class KantabServer
 
     internal async void UpgradeToWebsocket(HttpListenerContext ctx)
     {
-
-        Console.WriteLine("upgrading new connection to websocket");
         try
         {
             WebSocketContext wsCtx = await ctx.AcceptWebSocketAsync("kantab-v1");
@@ -85,7 +92,6 @@ public class KantabServer
             newClient.OnClientDisconnect += (s, graceful) =>
             {
                 _clients.Remove(newClient);
-                Console.WriteLine("ws client disconnected");
             };
 
             _clients.Add(newClient);

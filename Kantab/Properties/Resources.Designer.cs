@@ -68,9 +68,8 @@ namespace Kantab.Properties {
         ///    &lt;style&gt;
         ///        body{
         ///            width: 100%;
-        ///            display: flex;
-        ///            flex-direction: column;
-        ///            justify-content: center;
+        ///            text-align: center;
+        ///            font-family: monospace;
         ///        }
         ///    &lt;/style&gt;
         ///&lt;/head&gt;
