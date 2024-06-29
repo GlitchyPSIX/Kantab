@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Kantab.GUI.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="300"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="350"
              x:Class="Kantab.GUI.Views.MainView"
              x:DataType="vm:MainViewModel">
   <Design.DataContext>
@@ -12,33 +12,93 @@
     <vm:MainViewModel />
   </Design.DataContext>
   <Panel Classes="bg">
-    <TabControl>
+    <TabControl SelectedIndex="0">
       <TabItem Header="Kantab Server" >
         <Border Classes="tabWrap">
           <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-              <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                  <TextBlock Classes="h1">Kantab Server is</TextBlock>
-                  <TextBlock Classes="h1 strong">turned off.</TextBlock>
-              </StackPanel>
-              <Button Name="btnStartSrv">Start Kantab Server</Button>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+              <TextBlock Classes="h1">Kantab Server is</TextBlock>
+              <TextBlock Name="lbServerStatus" Classes="h1 strong">turned off.</TextBlock>
+            </StackPanel>
+            <Button Margin="0 0 0 10" Name="btnStartSrv">Start Kantab Server</Button>
+            <Button Name="btnExit" Click="BtnExit_OnClick">Fully Exit Kantab</Button>
           </StackPanel>
         </Border>
 
       </TabItem>
-      <TabItem Header="Kantab Settings" ></TabItem>
-      <TabItem Header="About Kantab" ></TabItem>
+      <TabItem Header="Construct Settings" >
+        <Border Classes="tabWrap">
+            <DockPanel Margin="10">
+            <StackPanel Classes="setting" Orientation="Horizontal" VerticalAlignment="Center">
+                <ComboBox Width="220" SelectedIndex="0">
+                </ComboBox>
+                <TextBlock Margin="5 0 0 0" Classes="label" VerticalAlignment="Center">Current Construct</TextBlock>
+            </StackPanel>
+                </DockPanel>
+        </Border>
+      </TabItem>
+      <TabItem Header="Server Settings" >
+        <Border Classes="tabWrap">
+          <DockPanel Margin="10">
+            <StackPanel Height="30" Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Bottom">
+              <Button  Width="90">Undo</Button>
+              <Button Margin="5 0 0 0" Width="90">Save</Button>
+            </StackPanel>
+            <StackPanel>
+              <StackPanel Classes="setting" Orientation="Horizontal" VerticalAlignment="Center">
+                <NumericUpDown Width="90" FormatString="#" Minimum="1" Value="7329" Maximum="65535" ClipValueToMinMax="True" ></NumericUpDown>
+                <TextBlock Margin="5 0 0 0" Classes="label" VerticalAlignment="Center">Server Port</TextBlock>
+              </StackPanel>
+              <StackPanel Classes="setting" Orientation="Horizontal" VerticalAlignment="Center">
+                <ComboBox Width="220" SelectedIndex="0">
+                  <ComboBoxItem>Mouse/WinTab (no pressure)</ComboBoxItem>
+                  <ComboBoxItem IsEnabled="False">OpenTabletDriver (soon?)</ComboBoxItem>
+                </ComboBox>
+                <TextBlock Margin="5 0 0 0" Classes="label" VerticalAlignment="Center">Pen Info Provider</TextBlock>
+              </StackPanel>
+              <StackPanel Classes="setting" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Name="btnScreenScissor" Width="70" Height="70" Padding="0">
+                  <DockPanel>
+                    <Image Source="/Assets/kantabScreenSegment.png" Stretch="UniformToFill"></Image>
+                  </DockPanel>
+                </Button>
+                <StackPanel VerticalAlignment="Center" Margin="10 0 0 0">
+                  <TextBlock Name="lbCurrentScissorStatus" Classes="label">Set Base Screen Region</TextBlock>
+                  <TextBlock Classes="label">Current: (0, 0) - (1920, 1080)</TextBlock>
+                </StackPanel>
+              </StackPanel>
+            </StackPanel>
+          </DockPanel>
+        </Border>
+      </TabItem>
+
+      <TabItem Header="About" ></TabItem>
     </TabControl>
   </Panel>
   <UserControl.Styles>
 
-<Style Selector="TextBlock.h1">
-    <Setter Property="FontSize" Value="21"></Setter>
-    <Setter Property="Padding" Value="3 3 3 6"></Setter>
-</Style>
+    <Style Selector="TextBlock.h1">
+      <Setter Property="FontSize" Value="21"></Setter>
+      <Setter Property="Padding" Value="3 3 3 6"></Setter>
+    </Style>
 
-      <Style Selector="TextBlock.h1.strong">
-        <Setter Property="FontWeight" Value="Bold"></Setter>
-      </Style>
+    <Style Selector="TextBlock.label">
+      <Setter Property="FontSize" Value="14"></Setter>
+      <Setter Property="FontWeight" Value="Medium"></Setter>
+    </Style>
+
+    <Style Selector="TextBlock.label.emph">
+      <Setter Property="FontSize" Value="14"></Setter>
+      <Setter Property="FontWeight" Value="Bold"></Setter>
+    </Style>
+
+    <Style Selector="StackPanel.setting">
+      <Setter Property="Margin" Value="0 0 0 5"></Setter>
+    </Style>
+
+    <Style Selector="TextBlock.h1.strong">
+      <Setter Property="FontWeight" Value="Bold"></Setter>
+    </Style>
 
     <Style Selector="Button">
       <Setter Property="BorderThickness" Value="2"></Setter>
@@ -51,8 +111,37 @@
 
     </Style>
 
+    <Style Selector="NumericUpDown">
+      <Setter Property="BorderThickness" Value="2"></Setter>
+      <Setter Property="BorderBrush" Value="#000000"></Setter>
+      <Setter Property="CornerRadius" Value="2.5"></Setter>
+      <Setter Property="FontSize" Value="13"></Setter>
+      <Setter Property="FontWeight" Value="Bold"></Setter>
+    </Style>
+
+    <Style Selector="ComboBox">
+      <Setter Property="MinHeight" Value="30"></Setter>
+      <Setter Property="BorderThickness" Value="2"></Setter>
+      <Setter Property="BorderBrush" Value="#000000"></Setter>
+      <Setter Property="CornerRadius" Value="2.5"></Setter>
+      <Setter Property="FontSize" Value="13"></Setter>
+      <Setter Property="FontWeight" Value="Bold"></Setter>
+    </Style>
+
+    <Style Selector="ComboBoxItem">
+      <Setter Property="MinHeight" Value="30"></Setter>
+      <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
+      <Setter Property="CornerRadius" Value="2.5"></Setter>
+      <Setter Property="FontSize" Value="13"></Setter>
+      <Setter Property="FontWeight" Value="Bold"></Setter>
+    </Style>
+
+    <Style Selector="ComboBoxItem[IsEffectivelyEnabled=False]">
+      <Setter Property="Foreground" Value="#AAA"/>
+    </Style>
+
     <Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="BoxShadow" Value="0 0 Black"></Setter>
+      <Setter Property="BoxShadow" Value="0 0 Black"></Setter>
     </Style>
 
     <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
@@ -110,10 +199,66 @@
       <Setter Property="BoxShadow" Value="4 4 Black"></Setter>
     </Style>
 
-
     <Style Selector="TabControl Border">
       <Setter Property="BorderThickness" Value="1.5 1.5 1.5 0"></Setter>
       <Setter Property="BorderBrush" Value="#000000"></Setter>
+    </Style>
+
+
+    <Style Selector="Button.tlScissorMode">
+      <Style.Animations>
+        <Animation Duration="0:0:0.5" IterationCount="INFINITE" PlaybackDirection="Alternate">
+          <KeyFrame Cue="0%">
+            <Setter Property="Background" Value="#EFE"></Setter>
+          </KeyFrame>
+          <KeyFrame Cue="32.9%">
+            <Setter Property="Background" Value="#EFE"></Setter>
+          </KeyFrame>
+          <KeyFrame Cue="33%">
+            <Setter Property="Background" Value="#8bfe83"></Setter>
+          </KeyFrame>
+          <KeyFrame Cue="74.9%">
+            <Setter Property="Background" Value="#8bfe83"></Setter>
+          </KeyFrame>
+          <KeyFrame Cue="75%">
+            <Setter Property="Background" Value="#4dfe41"></Setter>
+          </KeyFrame>
+          <KeyFrame Cue="99.9%">
+            <Setter Property="Background" Value="#4dfe41"></Setter>
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Background" Value="#10fe00"></Setter>
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+
+    <Style Selector="Button.brScissorMode">
+      <Style.Animations>
+        <Animation Duration="0:0:0.5" IterationCount="INFINITE" PlaybackDirection="Alternate">
+          <KeyFrame Cue="0%">
+            <Setter Property="Background" Value="#FEE"></Setter>
+          </KeyFrame>
+          <KeyFrame Cue="32.9%">
+            <Setter Property="Background" Value="#FEE"></Setter>
+          </KeyFrame>
+          <KeyFrame Cue="33%">
+            <Setter Property="Background" Value="#fe8b83"></Setter>
+          </KeyFrame>
+          <KeyFrame Cue="74.9%">
+            <Setter Property="Background" Value="#fe8b83"></Setter>
+          </KeyFrame>
+          <KeyFrame Cue="75%">
+            <Setter Property="Background" Value="#fe4d41"></Setter>
+          </KeyFrame>
+          <KeyFrame Cue="99.9%">
+            <Setter Property="Background" Value="#fe4d41"></Setter>
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Background" Value="#fe1000"></Setter>
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
     </Style>
   </UserControl.Styles>
 </UserControl>

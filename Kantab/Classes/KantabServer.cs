@@ -30,53 +30,94 @@ public class KantabServer
     public event EventHandler<KantabClient> ClientConnected;
     public event EventHandler<KantabClient> ClientDisconnected;
 
+    public event EventHandler ServerStarted;
+    public event EventHandler ServerStopped;
+    public event EventHandler<Exception> ServerCatastrophe;
+
     private KantabSettings _loadedSettings;
     public IPenStateProvider PenStateProvider = new MousePenStateProvider();
     private Task _httpServerTask;
 
     private System.Timers.Timer _positionFetchTimer;
 
-    public KantabServer(KantabSettings? config) {
+    public KantabServer(KantabSettings? config)
+    {
         float fetchRate;
         if (config.HasValue) _loadedSettings = config.Value;
         Port = config?.Port ?? Port;
         fetchRate = config?.FetchRate ?? 12;
         _positionFetchTimer = new();
 
-        if (_loadedSettings.ScreenRegion.Empty) _loadedSettings.ScreenRegion = new Rectangle(1920, 0, 1920*2, 1080);
+        if (_loadedSettings.ScreenRegion.Empty) _loadedSettings.ScreenRegion = new Rectangle(1920, 0, 1920 * 2, 1080);
         _positionFetchTimer.Elapsed += BroadcastPenState;
         _positionFetchTimer.Interval = fetchRate;
     }
 
-    public void Start() {
+    public void Start()
+    {
         _positionFetchTimer.Start();
         Task.Run(BeginHttpServer);
+        ServerStarted?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void Stop() {
+        _positionFetchTimer?.Stop();
+        _listener?.Stop();
+        _listener?.Close();
+        ServerStopped?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void SetSettings(KantabSettings config) {
+        Port = config.Port;
+        float fetchRate = config.FetchRate;
+
+        if (_loadedSettings.ScreenRegion.Empty) _loadedSettings.ScreenRegion = new Rectangle(1920, 0, 1920 * 2, 1080);
+        _positionFetchTimer.Interval = fetchRate;
     }
 
     private async Task BeginHttpServer()
     {
-        _listener = new HttpListener();
-        _httpHandler = new KantabHttpHandler();
-        _httpHandler.Init();
-        _listener.Prefixes.Add(_prefix);
-        _listener.Start();
+        try
+        {
+            _listener = new HttpListener();
+            _httpHandler = new KantabHttpHandler();
+            _httpHandler.Init();
+            _listener.Prefixes.Add(_prefix);
+            _listener.Start();
+        }
+        catch (Exception e) {
+            Stop();
+            ServerCatastrophe?.Invoke(this, e);
+            return;
+        }
 
         while (true)
         {
-            HttpListenerContext httpCtx = await _listener.GetContextAsync();
-            if (httpCtx.Request.IsWebSocketRequest)
+            try
             {
-                UpgradeToWebsocket(httpCtx);
+                HttpListenerContext httpCtx = await _listener.GetContextAsync();
+                if (httpCtx.Request.IsWebSocketRequest)
+                {
+                    UpgradeToWebsocket(httpCtx);
+                }
+                else
+                {
+                    _ = _httpHandler.RunHandler(httpCtx);
+                }
             }
-            else
+            catch (Exception e)
             {
-                _ = _httpHandler.RunHandler(httpCtx);
+                Stop();
+                ServerCatastrophe?.Invoke(this, e);
+                break;
             }
         }
     }
 
-    private void BroadcastPenState(object? sender, ElapsedEventArgs args) {
-        foreach (KantabClient client in _clients) {
+    private void BroadcastPenState(object? sender, ElapsedEventArgs args)
+    {
+        foreach (KantabClient client in _clients)
+        {
             if (!client.Ready) continue;
             client.SendMessage(new PenInformationMessage(false, PenStateProvider.CurrentPenState, _loadedSettings.ScreenRegion));
         }
