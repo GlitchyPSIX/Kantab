@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 namespace Kantab.Classes.Router.Middleware;
 
-public static class KantabHttpFileServer
-{
+public static class KantabHttpFileServer {
+
+    public static string[] IndexExtensions = {"html", "htm"};
+
     /// <summary>
     /// Serves files according to directory structure.
     /// </summary>
@@ -26,11 +28,22 @@ public static class KantabHttpFileServer
             .ToArray();
         string physicalPath = Path.Join(realPathSegments).Replace('\\', '/');
 
+        if (!Path.HasExtension(physicalPath)) {
+            foreach (string extension in IndexExtensions) {
+                string joinedPath = Path.Join(physicalPath, $"/index.{extension}");
+                if (File.Exists(joinedPath)) {
+                    physicalPath = joinedPath;
+                    break;
+                }
+            }
+        }
+
         if (!File.Exists(physicalPath))
         {
             ctx.Status = HttpStatusCode.NotFound;
             return;
         }
+
 
         byte[] fileBytes = await File.ReadAllBytesAsync(physicalPath);
         string mimeType = MimeMapping.MimeUtility.GetMimeMapping(Path.GetExtension(physicalPath).Replace(".", ""));

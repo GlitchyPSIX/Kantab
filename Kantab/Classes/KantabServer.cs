@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.WebSockets;
 using System.Reflection;
@@ -23,7 +25,7 @@ namespace Kantab.Classes;
 public class KantabServer
 {
 
-    public short Port = 8337;
+    public short Port = 7329;
     private string _prefix => $"http://localhost:{Port}/";
 
     private HttpListener _listener;
@@ -39,29 +41,37 @@ public class KantabServer
     public event EventHandler ServerStopped;
     public event EventHandler<Exception> ServerCatastrophe;
 
-    public List<ConstructMetadata> AvailableConstructs = new();
-    public ConstructMetadata CurrentConstruct;
+    public Dictionary<string, ConstructMetadata> AvailableConstructs = new();
+    public ConstructMetadata? CurrentConstruct = null;
 
     private KantabSettings _loadedSettings;
+    public KantabSettings LoadedSettings => _loadedSettings;
     public IPenStateProvider PenStateProvider = new MousePenStateProvider();
     private Task _httpServerTask;
 
     private System.Timers.Timer _positionFetchTimer;
 
-    public KantabServer(KantabSettings? config)
+    public KantabServer(KantabSettings config)
     {
-        float fetchRate;
-        if (config.HasValue) _loadedSettings = config.Value;
-        Port = config?.Port ?? Port;
-        fetchRate = config?.FetchRate ?? 12;
+        SetSettings(config);
         _positionFetchTimer = new();
 
         if (_loadedSettings.ScreenRegion.Empty) _loadedSettings.ScreenRegion = new Rectangle(1920, 0, 1920 * 2, 1080);
         _positionFetchTimer.Elapsed += BroadcastPenState;
-        _positionFetchTimer.Interval = fetchRate;
+        _positionFetchTimer.Interval = _loadedSettings.FetchRate;
 
         _httpHandler = new KantabHttpHandler();
         SetupRoutes();
+
+        LoadConstructs();
+        if (_loadedSettings.ConstructFolder == null) {
+            string? firstConstruct = AvailableConstructs.Keys.FirstOrDefault();
+            if (firstConstruct == null) {
+                CurrentConstruct = null;
+                return;
+            }
+            SelectConstruct(firstConstruct);
+        }
     }
 
     public void Start()
@@ -79,11 +89,14 @@ public class KantabServer
     }
 
     public void SetSettings(KantabSettings config) {
+        _loadedSettings = config;
         Port = config.Port;
         float fetchRate = config.FetchRate;
 
         if (_loadedSettings.ScreenRegion.Empty) _loadedSettings.ScreenRegion = new Rectangle(1920, 0, 1920 * 2, 1080);
-        _positionFetchTimer.Interval = fetchRate;
+        if (_positionFetchTimer != null) {
+            _positionFetchTimer.Interval = fetchRate;
+        }
     }
 
     private async Task BeginHttpServer()
@@ -158,6 +171,39 @@ public class KantabServer
         }
     }
 
+    private void LoadConstructs() {
+        AvailableConstructs.Clear();
+        string[] filePaths = Directory.GetFiles(
+            Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "Constructs"),
+            "kantab.json", SearchOption.AllDirectories);
+
+        foreach (string filePath in filePaths) {
+            string jsonText = File.ReadAllText(filePath);
+            ConstructMetadata? meta;
+            try {
+                meta = JsonSerializer.Deserialize<ConstructMetadata>(jsonText);
+            }
+            catch {
+                meta = null;
+            }
+            if (!meta.HasValue) continue;
+
+            string folderName = Path.GetDirectoryName(filePath).Replace("/", "\\").Split('\\')[^1];
+            ConstructMetadata actualMeta = meta.Value;
+            actualMeta.FilesystemBase = $"/constructs/{folderName}/";
+            actualMeta.Id = folderName;
+
+            AvailableConstructs.Add(folderName, actualMeta);
+        }
+
+        SelectConstruct(_loadedSettings.ConstructFolder);
+    }
+
+    public void SelectConstruct(string? id) {
+        if (id == null || !AvailableConstructs.ContainsKey(id)) return;
+        CurrentConstruct = AvailableConstructs[id];
+    }
+
     private void SetupRoutes() {
         _httpHandler.Get(new Regex(@"^constructs/.*$"),
             async (kCtx) =>
@@ -168,10 +214,27 @@ public class KantabServer
             }
         );
 
-        _httpHandler.Get(new Regex(@"^settings/construct"),
+        _httpHandler.Get(new Regex(@"^settings/?$"),
             async (kCtx) => {
-                await KantabHttpFileServer.ServeText(kCtx, JsonSerializer.Serialize(CurrentConstruct),
+                ConstructMetadata? constr = CurrentConstruct;
+                await KantabHttpFileServer.ServeText(kCtx, JsonSerializer.Serialize(_loadedSettings),
                     "application/json");
+            }
+        );
+
+        _httpHandler.Get(new Regex(@"^settings/construct/?"),
+            async (kCtx) => {
+                ConstructMetadata? constr = CurrentConstruct;
+                await KantabHttpFileServer.ServeText(kCtx, JsonSerializer.Serialize(constr),
+                    "application/json");
+            }
+        );
+
+        _httpHandler.Get(new Regex(@"^views/.*$/?$"),
+            async (kCtx) => {
+                await KantabHttpFileServer.ServeDirectory(kCtx,
+                    Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "Views"),
+                    1);
             }
         );
     }

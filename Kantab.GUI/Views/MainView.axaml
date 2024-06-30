@@ -28,13 +28,23 @@
       </TabItem>
       <TabItem Header="Construct Settings" >
         <Border Classes="tabWrap">
-            <DockPanel Margin="10">
-            <StackPanel Classes="setting" Orientation="Horizontal" VerticalAlignment="Center">
+          <DockPanel Margin="10">
+            <StackPanel Height="30" Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Bottom">
+              <Button Margin="5 0 0 0" Width="90" Name="btnSaveConsSettings" Click="BtnSaveConsSettings_OnClick">Save</Button>
+            </StackPanel>
+            <StackPanel>
+                <StackPanel Classes="setting" Orientation="Horizontal" VerticalAlignment="Center">
+                    <NumericUpDown Width="90" FormatString="F2" Increment="0.1" Minimum="0.1" Value="1.0" Maximum="4" ClipValueToMinMax="True" Name="nudScale" ></NumericUpDown>
+                    <TextBlock Margin="5 0 0 0" Classes="label" VerticalAlignment="Center">Construct Scale</TextBlock>
+                </StackPanel>
+                <StackPanel Classes="setting" Orientation="Horizontal" VerticalAlignment="Top">
                 <ComboBox Width="220" SelectedIndex="0">
                 </ComboBox>
                 <TextBlock Margin="5 0 0 0" Classes="label" VerticalAlignment="Center">Current Construct</TextBlock>
+              </StackPanel>
             </StackPanel>
-                </DockPanel>
+
+          </DockPanel>
         </Border>
       </TabItem>
       <TabItem Header="Server Settings" >
