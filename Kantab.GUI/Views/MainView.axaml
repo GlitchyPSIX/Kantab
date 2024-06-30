@@ -18,9 +18,9 @@
           <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
               <TextBlock Classes="h1">Kantab Server is</TextBlock>
-              <TextBlock Name="lbServerStatus" Classes="h1 strong">turned off.</TextBlock>
+              <TextBlock x:Name="lbServerStatus" TextAlignment="Left" Classes="h1 strong"></TextBlock>
             </StackPanel>
-            <Button Margin="0 0 0 10" Name="btnStartSrv">Start Kantab Server</Button>
+            <Button Margin="0 0 0 10" Name="btnStartSrv" Click="BtnStartSrv_OnClick">Start Kantab Server</Button>
             <Button Name="btnExit" Click="BtnExit_OnClick">Fully Exit Kantab</Button>
           </StackPanel>
         </Border>
