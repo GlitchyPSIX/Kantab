@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Kantab.GUI.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="350"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="400"
              x:Class="Kantab.GUI.Views.MainView"
              x:DataType="vm:MainViewModel">
   <Design.DataContext>
@@ -12,7 +12,7 @@
     <vm:MainViewModel />
   </Design.DataContext>
   <Panel Classes="bg">
-    <TabControl SelectedIndex="0">
+    <TabControl SelectedIndex="1" Name="tcMainTabs" IsEnabled="{Binding !SettingRectangle}">
       <TabItem Header="Kantab Server" >
         <Border Classes="tabWrap">
           <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -20,8 +20,8 @@
               <TextBlock Classes="h1">Kantab Server is</TextBlock>
               <TextBlock x:Name="lbServerStatus" TextAlignment="Left" Classes="h1 strong"></TextBlock>
             </StackPanel>
-            <Button Margin="0 0 0 10" Name="btnStartSrv" Click="BtnStartSrv_OnClick">Start Kantab Server</Button>
-            <Button Name="btnExit" Click="BtnExit_OnClick">Fully Exit Kantab</Button>
+            <Button Classes="btn" Margin="0 0 0 10" Name="btnStartSrv" Click="BtnStartSrv_OnClick">Start Kantab Server</Button>
+            <Button Classes="btn" Name="btnExit" Click="BtnExit_OnClick">Fully Exit Kantab</Button>
           </StackPanel>
         </Border>
 
@@ -30,18 +30,24 @@
         <Border Classes="tabWrap">
           <DockPanel Margin="10">
             <StackPanel Height="30" Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Bottom">
-              <Button Margin="5 0 0 0" Width="90" Name="btnSaveConsSettings" Click="BtnSaveConsSettings_OnClick">Save</Button>
+              <Button Classes="btn" Margin="5 0 0 0" Width="90" Name="btnSaveConsSettings" Click="BtnSaveConsSettings_OnClick">Save</Button>
+            </StackPanel>
+            <StackPanel Height="30" Orientation="Horizontal" HorizontalAlignment="Center" DockPanel.Dock="Top">
+              <Button Classes="btn" Margin="5 0 0 0" Name="btnReloadCons" Click="BtnReloadCons_OnClick">Reload Constructs</Button>
             </StackPanel>
             <StackPanel>
-                <StackPanel Classes="setting" Orientation="Horizontal" VerticalAlignment="Center">
-                    <NumericUpDown Width="90" FormatString="F2" Increment="0.1" Minimum="0.1" Value="1.0" Maximum="4" ClipValueToMinMax="True" Name="nudScale" ></NumericUpDown>
-                    <TextBlock Margin="5 0 0 0" Classes="label" VerticalAlignment="Center">Construct Scale</TextBlock>
-                </StackPanel>
-                <StackPanel Classes="setting" Orientation="Horizontal" VerticalAlignment="Top">
-                <ComboBox Width="220" SelectedIndex="0">
+              <StackPanel Classes="setting" Orientation="Horizontal" VerticalAlignment="Center">
+                <NumericUpDown Width="90" FormatString="F2" Increment="0.1" Minimum="0.1" Value="1.0" Maximum="4" ClipValueToMinMax="True" Name="nudScale" ></NumericUpDown>
+                <TextBlock Margin="5 0 0 0" Classes="label" VerticalAlignment="Center">Construct Scale</TextBlock>
+              </StackPanel>
+              <StackPanel Classes="setting" Orientation="Horizontal" VerticalAlignment="Top">
+                <ComboBox Width="220" Name="cbConstruct" SelectionChanged="CbConstruct_OnSelectionChanged">
                 </ComboBox>
                 <TextBlock Margin="5 0 0 0" Classes="label" VerticalAlignment="Center">Current Construct</TextBlock>
               </StackPanel>
+              <ScrollViewer Height="120">
+                <TextBlock Name="tbConstructMeta" TextWrapping="WrapWithOverflow"></TextBlock>
+              </ScrollViewer>
             </StackPanel>
 
           </DockPanel>
@@ -51,12 +57,12 @@
         <Border Classes="tabWrap">
           <DockPanel Margin="10">
             <StackPanel Height="30" Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Bottom">
-              <Button  Width="90">Undo</Button>
-              <Button Margin="5 0 0 0" Width="90">Save</Button>
+              <Button Classes="btn" Width="90" Name="btnServerSettsUndo" Click="BtnServerSettsUndo_OnClick">Undo</Button>
+              <Button Classes="btn" Margin="5 0 0 0" Width="90" Name="btnServerSettsSave" Click="BtnServerSettsSave_OnClick">Save</Button>
             </StackPanel>
             <StackPanel>
               <StackPanel Classes="setting" Orientation="Horizontal" VerticalAlignment="Center">
-                <NumericUpDown Width="90" FormatString="#" Minimum="1" Value="7329" Maximum="65535" ClipValueToMinMax="True" ></NumericUpDown>
+                <NumericUpDown Width="90" FormatString="#" Minimum="1" Value="7329" Maximum="65535" ClipValueToMinMax="True" Name="nudPort"></NumericUpDown>
                 <TextBlock Margin="5 0 0 0" Classes="label" VerticalAlignment="Center">Server Port</TextBlock>
               </StackPanel>
               <StackPanel Classes="setting" Orientation="Horizontal" VerticalAlignment="Center">
@@ -67,14 +73,14 @@
                 <TextBlock Margin="5 0 0 0" Classes="label" VerticalAlignment="Center">Pen Info Provider</TextBlock>
               </StackPanel>
               <StackPanel Classes="setting" Orientation="Horizontal" VerticalAlignment="Center">
-                <Button Name="btnScreenScissor" Width="70" Height="70" Padding="0">
+                <Button Classes="btn" Classes.tlScissorMode="{Binding SettingTopLeft}" Classes.brScissorMode="{Binding SettingBotomRight}" Click="BtnScreenScissor_OnClick" Name="btnScreenScissor" Width="70" Height="70" Padding="0">
                   <DockPanel>
                     <Image Source="/Assets/kantabScreenSegment.png" Stretch="UniformToFill"></Image>
                   </DockPanel>
                 </Button>
                 <StackPanel VerticalAlignment="Center" Margin="10 0 0 0">
                   <TextBlock Name="lbCurrentScissorStatus" Classes="label">Set Base Screen Region</TextBlock>
-                  <TextBlock Classes="label">Current: (0, 0) - (1920, 1080)</TextBlock>
+                  <TextBlock Classes="label" Name="tbCurrentScissor" Text="{Binding RegionScissorString}"></TextBlock>
                 </StackPanel>
               </StackPanel>
             </StackPanel>
@@ -110,16 +116,16 @@
       <Setter Property="FontWeight" Value="Bold"></Setter>
     </Style>
 
-    <Style Selector="Button">
-      <Setter Property="BorderThickness" Value="2"></Setter>
-      <Setter Property="BorderBrush" Value="#000000"></Setter>
-      <Setter Property="CornerRadius" Value="5 "></Setter>
-      <Setter Property="Padding" Value="15 5"></Setter>
-      <Setter Property="FontSize" Value="13"></Setter>
-      <Setter Property="FontWeight" Value="Bold"></Setter>
-      <Setter Property="ClipToBounds" Value="False"></Setter>
+      <Style Selector="Button.btn">
+          <Setter Property="BorderThickness" Value="2"></Setter>
+          <Setter Property="BorderBrush" Value="#000000"></Setter>
+          <Setter Property="CornerRadius" Value="5 "></Setter>
+          <Setter Property="Padding" Value="15 5"></Setter>
+          <Setter Property="FontSize" Value="13"></Setter>
+          <Setter Property="FontWeight" Value="Bold"></Setter>
+          <Setter Property="ClipToBounds" Value="False"></Setter>
 
-    </Style>
+      </Style>
 
     <Style Selector="NumericUpDown">
       <Setter Property="BorderThickness" Value="2"></Setter>
@@ -150,26 +156,24 @@
       <Setter Property="Foreground" Value="#AAA"/>
     </Style>
 
-    <Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="Button.btn /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="BoxShadow" Value="0 0 Black"></Setter>
     </Style>
 
-    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="Button.btn:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="BoxShadow" Value="4 4 Black"></Setter>
       <Setter Property="BorderBrush" Value="#000000"></Setter>
       <Setter Property="Background" Value="#DDD"></Setter>
     </Style>
 
-    <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="Button.btn:pressed /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="BorderBrush" Value="#000000"></Setter>
       <Setter Property="BoxShadow" Value="0 0 Black"></Setter>
       <Setter Property="Background" Value="#000"></Setter>
       <Setter Property="Foreground" Value="#FFF"></Setter>
     </Style>
 
-
-
-    <Style Selector="Panel.bg">
+      <Style Selector="Panel.bg">
       <Setter Property="Background" Value="#366FFF"></Setter>
     </Style>
 
@@ -209,13 +213,37 @@
       <Setter Property="BoxShadow" Value="4 4 Black"></Setter>
     </Style>
 
-    <Style Selector="TabControl Border">
-      <Setter Property="BorderThickness" Value="1.5 1.5 1.5 0"></Setter>
-      <Setter Property="BorderBrush" Value="#000000"></Setter>
-    </Style>
+      <Style Selector="Button.tlScissorMode:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+          <Setter Property="BoxShadow" Value="4 4 Black"></Setter>
+          <Setter Property="BorderBrush" Value="#000000"></Setter>
+        <Style.Animations>
+            <Animation Duration="0:0:0.5" IterationCount="INFINITE" PlaybackDirection="Alternate">
+                <KeyFrame Cue="0%">
+                    <Setter Property="Background" Value="#EFE"></Setter>
+                </KeyFrame>
+                <KeyFrame Cue="32.9%">
+                    <Setter Property="Background" Value="#EFE"></Setter>
+                </KeyFrame>
+                <KeyFrame Cue="33%">
+                    <Setter Property="Background" Value="#8bfe83"></Setter>
+                </KeyFrame>
+                <KeyFrame Cue="74.9%">
+                    <Setter Property="Background" Value="#8bfe83"></Setter>
+                </KeyFrame>
+                <KeyFrame Cue="75%">
+                    <Setter Property="Background" Value="#4dfe41"></Setter>
+                </KeyFrame>
+                <KeyFrame Cue="99.9%">
+                    <Setter Property="Background" Value="#4dfe41"></Setter>
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="Background" Value="#10fe00"></Setter>
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+      </Style>
 
-
-    <Style Selector="Button.tlScissorMode">
+      <Style Selector="Button.tlScissorMode">
       <Style.Animations>
         <Animation Duration="0:0:0.5" IterationCount="INFINITE" PlaybackDirection="Alternate">
           <KeyFrame Cue="0%">
@@ -270,5 +298,33 @@
         </Animation>
       </Style.Animations>
     </Style>
+
+      <Style Selector="Button.brScissorMode:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+          <Style.Animations>
+              <Animation Duration="0:0:0.5" IterationCount="INFINITE" PlaybackDirection="Alternate">
+                  <KeyFrame Cue="0%">
+                      <Setter Property="Background" Value="#FEE"></Setter>
+                  </KeyFrame>
+                  <KeyFrame Cue="32.9%">
+                      <Setter Property="Background" Value="#FEE"></Setter>
+                  </KeyFrame>
+                  <KeyFrame Cue="33%">
+                      <Setter Property="Background" Value="#fe8b83"></Setter>
+                  </KeyFrame>
+                  <KeyFrame Cue="74.9%">
+                      <Setter Property="Background" Value="#fe8b83"></Setter>
+                  </KeyFrame>
+                  <KeyFrame Cue="75%">
+                      <Setter Property="Background" Value="#fe4d41"></Setter>
+                  </KeyFrame>
+                  <KeyFrame Cue="99.9%">
+                      <Setter Property="Background" Value="#fe4d41"></Setter>
+                  </KeyFrame>
+                  <KeyFrame Cue="100%">
+                      <Setter Property="Background" Value="#fe1000"></Setter>
+                  </KeyFrame>
+              </Animation>
+          </Style.Animations>
+      </Style>
   </UserControl.Styles>
 </UserControl>

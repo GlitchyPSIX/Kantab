@@ -1,9 +1,11 @@
 ﻿using System.Numerics;
 using System.Text.Json.Serialization;
+using Kantab.Structs;
 
-namespace Kantab.Structs; 
+namespace Kantab.Classes;
 
-public struct KantabSettings {
+public class KantabSettings
+{
     /// <summary>
     /// The rectangle of the screen (virtual desktop space) to use for mouse calculations
     /// </summary>
@@ -41,7 +43,8 @@ public struct KantabSettings {
     public float Scale { get; set; } = 1.0f;
 
     [JsonConstructor]
-    public KantabSettings() {
+    public KantabSettings()
+    {
         FetchRate = 13f;
         Port = 7329;
         Autostart = false;

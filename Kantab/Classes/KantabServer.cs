@@ -34,8 +34,13 @@ public class KantabServer
     private List<KantabClient> _clients = new();
     public int ConnectedClients => _clients.Count;
 
+    public bool RegionSetupMode { get; set; }
+    public bool Running { get; private set; }
+
     public event EventHandler<KantabClient> ClientConnected;
     public event EventHandler<KantabClient> ClientDisconnected;
+
+    public event EventHandler<PenState> SetupModePositionReceived;
 
     public event EventHandler ServerStarted;
     public event EventHandler ServerStopped;
@@ -79,6 +84,7 @@ public class KantabServer
         _positionFetchTimer.Start();
         Task.Run(BeginHttpServer);
         ServerStarted?.Invoke(this, EventArgs.Empty);
+        Running = true;
     }
 
     public void Stop() {
@@ -86,9 +92,11 @@ public class KantabServer
         _listener?.Stop();
         _listener?.Close();
         ServerStopped?.Invoke(this, EventArgs.Empty);
+        Running = false;
     }
 
     public void SetSettings(KantabSettings config) {
+        // todo: refactor to get away from when this was a struct
         _loadedSettings = config;
         Port = config.Port;
         float fetchRate = config.FetchRate;
@@ -138,11 +146,17 @@ public class KantabServer
 
     private void BroadcastPenState(object? sender, ElapsedEventArgs args)
     {
-        foreach (KantabClient client in _clients)
-        {
-            if (!client.Ready) continue;
-            client.SendMessage(new PenInformationMessage(false, PenStateProvider.CurrentPenState, _loadedSettings.ScreenRegion));
+        if (!RegionSetupMode) {
+            foreach (KantabClient client in _clients)
+            {
+                if (!client.Ready) continue;
+                client.SendMessage(new PenInformationMessage(false, PenStateProvider.CurrentPenState, _loadedSettings.ScreenRegion));
+            }
         }
+        else {
+            SetupModePositionReceived?.Invoke(this, PenStateProvider.CurrentPenState);
+        }
+        
     }
 
     internal async void UpgradeToWebsocket(HttpListenerContext ctx)
@@ -171,7 +185,7 @@ public class KantabServer
         }
     }
 
-    private void LoadConstructs() {
+    public void LoadConstructs() {
         AvailableConstructs.Clear();
         string[] filePaths = Directory.GetFiles(
             Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "Constructs"),
