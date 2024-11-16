@@ -9,8 +9,8 @@ public class CapabilitiesMessage : KantabMessage {
         Features = features;
     }
 
-    public CapabilitiesMessage(byte[] bytes) : base(bytes) {
-
+    public CapabilitiesMessage(byte bytes) : base(bytes) {
+        Features = (ClientFeatures)bytes;
     }
 
     public override byte[] ToBytes() {
