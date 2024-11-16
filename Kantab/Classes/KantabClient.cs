@@ -11,12 +11,12 @@ using Kantab.Classes.Messages.Common;
 using Kantab.Classes.PenStateProviders;
 using Kantab.Enums;
 using Kantab.Interfaces;
+using Kantab.Structs;
 using Timer = System.Timers.Timer;
 
 namespace Kantab.Classes;
 
-public class KantabClient
-{
+public class KantabClient {
 
     private KantabServer _myServer;
     private WebSocket _clientSocket;
@@ -26,6 +26,10 @@ public class KantabClient
     private int _accumulatedWhoops = 0;
 
     public bool Ready { get; private set; }
+    /// <summary>
+    /// True if this client serves as RELAY_AUTHORITY
+    /// </summary>
+    public bool IsRelay => Features.HasFlag(ClientFeatures.RELAY_AUTHORITY);
 
     public int MissedHeartbeats { get; private set; } = 0;
 
@@ -33,11 +37,16 @@ public class KantabClient
 
     public EventHandler<bool> OnClientConnectionEstablished;
     public EventHandler<bool> OnClientDisconnect;
+    /// <summary>
+    /// Invoked when the server responds with RELAY_AUTHORITY in C 03 Capabilities
+    /// </summary>
+    public EventHandler RelayUpgrade;
+    public EventHandler<PenState> PositionReceived;
+
 
     private CancellationTokenSource _tkn;
 
-    public KantabClient(KantabServer server, WebSocket clientSocket)
-    {
+    public KantabClient(KantabServer server, WebSocket clientSocket) {
         _myServer = server;
         _clientSocket = clientSocket;
         _heartbeatTimer = new Timer(1000);
@@ -50,26 +59,21 @@ public class KantabClient
 
     const int MEMORY_BUFFER_LENGTH = 32;
 
-    async void ReceiveLoop()
-    {
+    async void ReceiveLoop() {
         var loopToken = _tkn.Token;
         MemoryStream outputStream = new MemoryStream(32);
         byte[] buffer = new byte[MEMORY_BUFFER_LENGTH];
-        try
-        {
-            while (!loopToken.IsCancellationRequested)
-            {
+        try {
+            while (!loopToken.IsCancellationRequested) {
                 WebSocketReceiveResult receiveResult;
                 outputStream.Position = 0;
-                do
-                {
+                do {
                     receiveResult = await _clientSocket.ReceiveAsync(new ArraySegment<byte>(buffer), loopToken);
                     if (receiveResult.MessageType != WebSocketMessageType.Close)
                         await outputStream.WriteAsync(buffer, 0, receiveResult.Count, loopToken);
                 } while (!receiveResult.EndOfMessage);
 
-                if (receiveResult.MessageType == WebSocketMessageType.Close)
-                {
+                if (receiveResult.MessageType == WebSocketMessageType.Close) {
                     _tkn.Cancel();
                     break;
                 }
@@ -80,22 +84,30 @@ public class KantabClient
         }
         catch (TaskCanceledException) { OnClientDisconnect?.Invoke(this, true); }
         catch (WebSocketException) { _tkn.Cancel(); OnClientDisconnect?.Invoke(this, true); }
-        finally
-        {
+        finally {
             outputStream?.Dispose();
         }
     }
 
-    private void ProcessKantabMessage(ArraySegment<byte> buf)
-    {
+    private void ProcessKantabMessage(ArraySegment<byte> buf) {
         KantabMessage msg = KantabMessage.FromBytes(buf);
 
-        switch (msg)
-        {
-            case HelloMessage hello:
-                {
+        switch (msg) {
+            case HelloMessage hello: {
                     Ready = true;
                     _heartbeatTimer.Start();
+                    break;
+                }
+            case CapabilitiesMessage caps: {
+                    if (caps.Features.HasFlag(ClientFeatures.RELAY_AUTHORITY)) {
+                        RelayUpgrade?.Invoke(this, EventArgs.Empty);
+                    };
+                    Features = caps.Features;
+                    break;
+                }
+            case PenInformationMessage penInfo: {
+
+                    RelayPenState(penInfo.State);
                     break;
                 }
         }
@@ -103,37 +115,34 @@ public class KantabClient
         Console.WriteLine("Received: " + string.Join(" ", buf.Select(x => x.ToString("X2")).ToArray()));
     }
 
-    public async void SendMessage(KantabMessage message, bool overrideReady = false)
-    {
+    public async void SendMessage(KantabMessage message, bool overrideReady = false) {
         if (_clientSocket.State != WebSocketState.Open) return;
         if (!Ready && !overrideReady) return;
 
         await _wsSemaphore.WaitAsync();
-        try
-        {
+        try {
             await _clientSocket.SendKantabMessage(message);
         }
-        finally
-        {
+        finally {
             _wsSemaphore.Release();
         }
-
-
     }
 
-    private async void OnHeartbeatTick(object? sender, ElapsedEventArgs args)
-    {
+    private void RelayPenState(PenState ps) {
+        if (IsRelay)
+            PositionReceived?.Invoke(this, ps);
+    }
+
+    private async void OnHeartbeatTick(object? sender, ElapsedEventArgs args) {
         if (_clientSocket.State != WebSocketState.Open) return;
         if (!Ready) return;
 
         _accumulatedWhoops = 0;
         await _wsSemaphore.WaitAsync();
-        try
-        {
+        try {
             await _clientSocket.SendKantabMessage(new PingMessage());
         }
-        finally
-        {
+        finally {
             _wsSemaphore.Release();
         }
 

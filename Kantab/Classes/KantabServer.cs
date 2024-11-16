@@ -39,6 +39,7 @@ public class KantabServer
 
     public event EventHandler<KantabClient> ClientConnected;
     public event EventHandler<KantabClient> ClientDisconnected;
+    public event EventHandler<PenState> PositionRelayed;
 
     public event EventHandler<PenState> SetupModePositionReceived;
 
@@ -160,15 +161,29 @@ public class KantabServer
         {
             foreach (KantabClient client in _clients)
             {
-                if (!client.Ready) continue;
+                if (!client.Ready || client.IsRelay) continue;
+                // sends pen position, normalized to relative (0, 1), input is absolute
                 client.SendMessage(new PenInformationMessage(false, PenStateProvider.CurrentPenState, _loadedSettings.ScreenRegion));
             }
         }
         else
         {
+            // scissor setup mode, notify no clients
             SetupModePositionReceived?.Invoke(this, PenStateProvider.CurrentPenState);
         }
 
+    }
+
+    private void ReceivePenState(object? sender, PenState recvState)
+    {
+        // assume default absolute
+        bool absolute = sender != null ? ((KantabClient) sender).Features.HasFlag(Enums.ClientFeatures.ABSOLUTE_POSITION) : true;
+
+        if (!absolute) {
+            recvState.Position = recvState.DenormalizePosition(_loadedSettings.ScreenRegion);
+        }
+
+        PositionRelayed?.Invoke(this, recvState);
     }
 
     internal async void UpgradeToWebsocket(HttpListenerContext ctx)
@@ -181,7 +196,13 @@ public class KantabServer
             newClient.OnClientDisconnect += (s, graceful) =>
             {
                 _clients.Remove(newClient);
+                if (newClient.PositionReceived != null)
+                {
+                    newClient.PositionReceived -= ReceivePenState;
+                }
             };
+
+            newClient.PositionReceived += ReceivePenState;
 
             _clients.Add(newClient);
             newClient.SendMessage(new HelloMessage(), true);

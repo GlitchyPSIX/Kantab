@@ -24,5 +24,15 @@ namespace Kantab.Structs
             Vector2 size = screenSection.Size;
             return new(movedPos.X / size.X, movedPos.Y / size.Y);
         }
+
+        /// <summary>
+        /// Gives pen posistion in absolute pixel coordinates.
+        /// </summary>
+        /// <param name="screenSection">The section to expand to</param>
+        /// <returns>Absolute position where top left is (0, 0) and bottom right is (1, 1)</returns>
+        public Vector2 DenormalizePosition(Rectangle screenSection) {
+            Vector2 size = screenSection.Size;
+            return new(Position.X * size.X, Position.Y * size.Y);
+        }
     }
 }
