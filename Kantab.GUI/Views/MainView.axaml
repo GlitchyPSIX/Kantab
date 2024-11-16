@@ -12,7 +12,7 @@
     <vm:MainViewModel />
   </Design.DataContext>
   <Panel Classes="bg">
-    <TabControl SelectedIndex="1" Name="tcMainTabs" IsEnabled="{Binding !SettingRectangle}">
+    <TabControl SelectedIndex="0" Name="tcMainTabs" IsEnabled="{Binding !SettingRectangle}">
       <TabItem Header="Kantab Server" >
         <Border Classes="tabWrap">
           <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -20,8 +20,13 @@
               <TextBlock Classes="h1">Kantab Server is</TextBlock>
               <TextBlock x:Name="lbServerStatus" TextAlignment="Left" Classes="h1 strong"></TextBlock>
             </StackPanel>
-            <Button Classes="btn" Margin="0 0 0 10" Name="btnStartSrv" Click="BtnStartSrv_OnClick">Start Kantab Server</Button>
-            <Button Classes="btn" Name="btnExit" Click="BtnExit_OnClick">Fully Exit Kantab</Button>
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                  <TextBlock Margin="0 0 0 10" Classes="label" HorizontalAlignment="Center">Hand/Arm URL (for OBS): http://localhost:</TextBlock>
+                  <TextBlock Classes="label" Name="tbPort">7329</TextBlock>
+                  <TextBlock Classes="label">/views/large</TextBlock>
+              </StackPanel>
+            <Button Classes="btn" Margin="0 0 0 10" Name="btnStartSrv" Click="BtnStartSrv_OnClick">Start/Stop Kantab Server</Button>
+            <Button Classes="btn" Name="btnExit" Click="BtnExit_OnClick">Fully Exit Kantab!</Button>
           </StackPanel>
         </Border>
 
@@ -88,7 +93,23 @@
         </Border>
       </TabItem>
 
-      <TabItem Header="About" ></TabItem>
+      <TabItem Header="About" >
+          <Border Classes="tabWrap">
+              <DockPanel Margin="10">
+                  <StackPanel Height="30" Orientation="Horizontal" HorizontalAlignment="Center" DockPanel.Dock="Bottom">
+                      <Button Classes="btn" Width="120" Name="btnGPSI">GLITCHYPSI</Button>
+                      <Button Classes="btn" Margin="5 0 0 0" Width="120" Name="btnGithub">Github page</Button>
+                      <Button Classes="btn" Margin="5 0 0 0" Width="90" Name="btnDonate">Ko-fi</Button>
+                      <Button Classes="btn" Margin="5 0 0 0" Width="90" Name="btnItch">itch.io</Button>
+                  </StackPanel>
+                  <StackPanel HorizontalAlignment="Center">
+                      <Image Margin="8 8 8 12" Source="/Assets/kantablogo.png" Stretch="Uniform" />
+                      <TextBlock Classes="label" FontSize="11" Margin="3" HorizontalAlignment="Center" Text="customizable hand overlay companion for artist streamers" />
+                      <TextBlock Classes="label" HorizontalAlignment="Center" Text="{Binding VersionString}" />
+                  </StackPanel>
+              </DockPanel>
+          </Border>
+      </TabItem>
     </TabControl>
   </Panel>
   <UserControl.Styles>

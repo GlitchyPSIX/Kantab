@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
-using HandlebarsDotNet.Runtime;
 using Kantab.Classes;
 using Kantab.Structs;
-using System.Diagnostics.Contracts;
 using Kantab.GUI.Enums;
 using Kantab.GUI.ViewModels;
 using Avalonia.Threading;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
+using Newtonsoft.Json;
 
 namespace Kantab.GUI.Views;
 
@@ -21,13 +21,12 @@ public partial class MainView : UserControl
     private KantabServer _server = new(new());
     private MainViewModel vm = new();
     private Rectangle _previousScissor;
-    [AllowNull] private Window _myWin;
-    public MainView()
-    {
-        vm.ScreenRegionScissor = _server.LoadedSettings.ScreenRegion;
+    private ScreenScissorSetOverlay? _scrOverlay;
+    private Window? _myWin;
+    public MainView() {
+        
         DataContext = vm;
         InitializeComponent();
-
         OnServerOff();
 
         _server.ServerStarted += (sender, args) =>
@@ -42,7 +41,29 @@ public partial class MainView : UserControl
 
         _server.SetupModePositionReceived += UpdateWorkingScissor;
 
+        tbPort.Text = _server.LoadedSettings.Port.ToString();
+       
+    }
+
+    protected override void OnInitialized() {
+        base.OnInitialized();
+
+        EnsureMainWindow();
+        try {
+            KantabSettings? setts = null;
+            setts = JsonConvert.DeserializeObject<KantabSettings>(File.ReadAllText(vm.ConfigPath));
+            _server.SetSettings(setts ?? new());
+        }
+        catch {
+            var msgbox = MessageBoxManager.GetMessageBoxStandard("Kantab Settings",
+                "Note: Settings could not be read. Using default settings.\nPlease confirm your current settings.", icon: Icon.Error, windowStartupLocation: WindowStartupLocation.CenterOwner);
+            msgbox.ShowAsync();
+        }
+
+        vm.ScreenRegionScissor = _server.LoadedSettings.ScreenRegion;
         RefillConstructCombobox();
+        nudScale.Value = (decimal)_server.LoadedSettings.Scale;
+        nudPort.Value =  _server.LoadedSettings.Port;
     }
 
     private void OnServerOff()
@@ -62,7 +83,14 @@ public partial class MainView : UserControl
 
     private void BtnStartSrv_OnClick(object? sender, RoutedEventArgs e)
     {
-        _server.Start();
+        if (!_server.Running)
+        {
+            _server.Start();
+        }
+        else
+        {
+            _server.Stop();
+        }
     }
 
     private bool _previouslyPressed;
@@ -85,8 +113,15 @@ public partial class MainView : UserControl
         {
 
             EnsureMainWindow();
+
             vm.ScissorSetupState = ScissorSetupState.TOPLEFT;
-            Dispatcher.UIThread.Post(() => { _myWin.Topmost = true; });
+            Dispatcher.UIThread.Post(() =>
+            {
+                _myWin.Topmost = true;
+                _scrOverlay = new();
+                _scrOverlay.Show(_myWin);
+            });
+
 
         }
 
@@ -119,11 +154,18 @@ public partial class MainView : UserControl
 
             if (vm.ScissorSetupState == ScissorSetupState.BOTTOMRIGHT)
             {
-                Dispatcher.UIThread.Post(() => { _myWin.Topmost = false; });
+                Dispatcher.UIThread.Post(() =>
+                {
+                    _myWin.Topmost = false;
+                    _scrOverlay?.Close();
+                    _scrOverlay = null;
+                });
+                vm.ScreenRegionScissor = vm.ScreenRegionScissor.Normalize();
                 _updatingWorkingScissor = false;
                 _server.RegionSetupMode = false;
                 _server.LoadedSettings.ScreenRegion = vm.ScreenRegionScissor;
                 vm.ScissorSetupState = ScissorSetupState.NONE;
+
                 return;
             }
         }
@@ -187,6 +229,7 @@ public partial class MainView : UserControl
         _server.LoadedSettings.ConstructFolder = selectedConstructId;
         _server.SetSettings(_server.LoadedSettings);
         _server.SelectConstruct(selectedConstructId);
+        SaveSettings();
     }
 
     private void BtnReloadCons_OnClick(object? sender, RoutedEventArgs e)
@@ -221,14 +264,27 @@ public partial class MainView : UserControl
         nudPort.Value = _server.LoadedSettings.Port;
     }
 
-    private void BtnServerSettsSave_OnClick(object? sender, RoutedEventArgs e) {
+    private void BtnServerSettsSave_OnClick(object? sender, RoutedEventArgs e)
+    {
         _previousScissor = vm.ScreenRegionScissor;
         _server.LoadedSettings.ScreenRegion = _previousScissor;
-        _server.LoadedSettings.Port = (short) Math.Truncate(nudPort.Value ?? 7329);
+        _server.LoadedSettings.Port = (short)Math.Truncate(nudPort.Value ?? 7329);
+        tbPort.Text = _server.LoadedSettings.Port.ToString();
+        SaveSettings();
+    }
+
+    private void SaveSettings() {
         EnsureMainWindow();
-        var msgbox = MessageBoxManager.GetMessageBoxStandard("Kantab Settings",
-            "Settings saved.", icon: Icon.Success, windowStartupLocation: WindowStartupLocation.CenterOwner);
-        msgbox.ShowWindowDialogAsync(_myWin);
-        return;
+        try {
+            File.WriteAllText(vm.ConfigPath, JsonConvert.SerializeObject(_server.LoadedSettings));
+            var msgbox = MessageBoxManager.GetMessageBoxStandard("Kantab Settings",
+                "Settings saved.", icon: Icon.Success, windowStartupLocation: WindowStartupLocation.CenterOwner);
+            msgbox.ShowWindowDialogAsync(_myWin);
+        }
+        catch {
+            var msgbox = MessageBoxManager.GetMessageBoxStandard("Kantab Settings",
+                "Settings could not be saved.\nCan Kantab write to the directory it resides in?", icon: Icon.Error, windowStartupLocation: WindowStartupLocation.CenterOwner);
+            msgbox.ShowWindowDialogAsync(_myWin);
+        }
     }
 }

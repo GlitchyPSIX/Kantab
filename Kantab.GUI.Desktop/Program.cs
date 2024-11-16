@@ -1,6 +1,9 @@
 ﻿using System;
 
 using Avalonia;
+using Avalonia.Controls.Notifications;
+using DesktopNotifications;
+using DesktopNotifications.Avalonia;
 
 namespace Kantab.GUI.Desktop;
 
@@ -17,6 +20,7 @@ class Program
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
+            .SetupDesktopNotifications(out App.NotifMan!)
             .WithInterFont()
             .LogToTrace();
 

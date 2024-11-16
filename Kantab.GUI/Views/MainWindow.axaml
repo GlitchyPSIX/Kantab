@@ -8,7 +8,7 @@
         x:Class="Kantab.GUI.Views.MainWindow"
         Width="500" Height="350"
         CanResize="False"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/kantab.ico"
         Title="Kantab Control Panel">
         <views:MainView />
 </Window>

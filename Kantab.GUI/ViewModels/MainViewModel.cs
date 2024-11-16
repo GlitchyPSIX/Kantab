@@ -1,6 +1,9 @@
-﻿using Kantab.Classes;
+﻿using System;
+using System.IO;
+using System.Reflection;
+using Kantab.Classes;
 using Kantab.GUI.Enums;
-using Kantab.Structs;
+using Rectangle = Kantab.Structs.Rectangle;
 
 namespace Kantab.GUI.ViewModels;
 
@@ -34,4 +37,8 @@ public partial class MainViewModel : ViewModelBase
     public bool SettingTopLeft => _scissorState == ScissorSetupState.TOPLEFT;
     public bool SettingBotomRight => _scissorState == ScissorSetupState.BOTTOMRIGHT;
     public bool SettingRectangle => _scissorState != ScissorSetupState.NONE;
+
+    public string VersionString => $"version v{Assembly.GetExecutingAssembly().GetName().Version.ToString(3)}";
+
+    public string ConfigPath => Path.Join(AppDomain.CurrentDomain.BaseDirectory, "config.json");
 }

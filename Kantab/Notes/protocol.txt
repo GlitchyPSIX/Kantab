@@ -162,6 +162,17 @@ flag given when connecting), otherwise server will respond with "S FE: Whoops".
 
 --------------------------------------------------------------------
 
+C 05: Authorize
+
+[len: 8]
+
+## [?? ?? ?? ?? ?? ?? ??]
+
+Sent to the server to specify the 7-char long ASCII string used for password protection.
+The client MUST send this with the correct 7-char ASCII string in order to receive pen events from the server.
+
+--------------------------------------------------------------------
+
 C FF: End Of The Line
 
 [len: 2]
@@ -183,8 +194,19 @@ CLIENT FEATURES ENUM BITFIELD
 This enum is shared between client and server and serves to define what the server supports and what the client wants from the server.
 
 0000 0000 = No extra features
-0000 0001 = ABSOLUTE_POSITIONING (Position will be returned in raw coordinates rather than normalized coordinates. Only used sometimes,
-			mostly by RELAY_AUTHORITY)
-0000 0010 = EXTENDED_DATA (Along with Position, Pen Pressure and Tilt are sent.)
-0000 0100 = RELAY_AUTHORITY (This client wants to send positions for the server to relay rather than to receive them.)
-Servers MAY implement RELAY_AUTHORITY functionality.
+
+0000 0001 = ABSOLUTE_POSITIONING 
+			Position will be returned in raw coordinates rather than normalized coordinates. Only used sometimes,
+			mostly by RELAY_AUTHORITY
+
+0000 0010 = EXTENDED_DATA
+			Along with Position, Pen Pressure and Tilt are sent.
+
+0000 0100 = RELAY_AUTHORITY 
+			This client wants to send positions for the server to relay rather than to receive them.
+			Servers MAY implement RELAY_AUTHORITY functionality.
+
+0000 1000 = PROTECTED
+			Has no effect for client, but server replies this if sending pen position events is password protected.
+			In order for a client to receive messages by a server that returns PROTECTED, C 05 MUST be sent with the 
+			password specified by the server.

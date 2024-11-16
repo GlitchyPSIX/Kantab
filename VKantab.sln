@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kantab", "Kantab\Kantab.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kantab.GUI", "Kantab.GUI\Kantab.GUI.csproj", "{96D79BD3-7DFC-4880-9AD4-685285F28D43}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kantab.GUI.Desktop", "Kantab.GUI.Desktop\Kantab.GUI.Desktop.csproj", "{5410695D-E942-475A-B3FA-586B81B599B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kantab.GUI.Desktop.Win", "Kantab.GUI.Desktop\Kantab.GUI.Desktop.Win.csproj", "{5410695D-E942-475A-B3FA-586B81B599B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
