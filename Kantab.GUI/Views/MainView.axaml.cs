@@ -13,6 +13,7 @@ using Avalonia.Threading;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using Newtonsoft.Json;
+using Kantab.Classes.PenStateProviders;
 
 namespace Kantab.GUI.Views;
 
@@ -26,6 +27,7 @@ public partial class MainView : UserControl
     public MainView() {
         
         DataContext = vm;
+        vm.RelayStateProv = new KRelayPenStateProvider(_server);
         InitializeComponent();
         OnServerOff();
 
@@ -62,6 +64,7 @@ public partial class MainView : UserControl
 
         vm.ScreenRegionScissor = _server.LoadedSettings.ScreenRegion;
         RefillConstructCombobox();
+        cbProvider.SelectedIndex = _server.LoadedSettings.PenProvider;
         nudScale.Value = (decimal)_server.LoadedSettings.Scale;
         nudPort.Value =  _server.LoadedSettings.Port;
     }
@@ -266,6 +269,7 @@ public partial class MainView : UserControl
 
     private void BtnServerSettsSave_OnClick(object? sender, RoutedEventArgs e)
     {
+        _server.LoadedSettings.PenProvider = (byte)cbProvider.SelectedIndex;
         _previousScissor = vm.ScreenRegionScissor;
         _server.LoadedSettings.ScreenRegion = _previousScissor;
         _server.LoadedSettings.Port = (short)Math.Truncate(nudPort.Value ?? 7329);
@@ -287,4 +291,10 @@ public partial class MainView : UserControl
             msgbox.ShowWindowDialogAsync(_myWin);
         }
     }
+
+    private void cbProvider_SelectionChanged(object? sender, Avalonia.Controls.SelectionChangedEventArgs e) {
+
+        _server.PenStateProvider = (cbProvider?.SelectedIndex ?? 0 ) == 0 ? vm.MouseStateProv : vm.RelayStateProv; // lol
+    }
+
 }

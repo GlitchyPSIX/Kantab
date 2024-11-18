@@ -71,11 +71,15 @@
                 <TextBlock Margin="5 0 0 0" Classes="label" VerticalAlignment="Center">Server Port</TextBlock>
               </StackPanel>
               <StackPanel Classes="setting" Orientation="Horizontal" VerticalAlignment="Center">
-                <ComboBox Width="220" SelectedIndex="0">
+                <ComboBox x:Name="cbProvider" Width="220" SelectedIndex="0" SelectionChanged="cbProvider_SelectionChanged">
                   <ComboBoxItem>Mouse/WinTab (no pressure)</ComboBoxItem>
-                  <ComboBoxItem IsEnabled="False">OpenTabletDriver (soon?)</ComboBoxItem>
+                  <ComboBoxItem>Relay plugins (Browser, OTD)</ComboBoxItem>
                 </ComboBox>
-                <TextBlock Margin="5 0 0 0" Classes="label" VerticalAlignment="Center">Pen Info Provider</TextBlock>
+                <TextBlock Margin="5 0 0 0" Classes="label" VerticalAlignment="Center">Pen State Provider</TextBlock>
+              </StackPanel>
+              <StackPanel Classes="setting" Orientation="Vertical" VerticalAlignment="Center">
+                 <TextBlock Margin="5 0 0 0" VerticalAlignment="Center" TextWrapping="Wrap">Mouse/Wintab: Kantab will attempt to get your mouse's position and click to control the pen. Does not support pressure.</TextBlock>
+                 <TextBlock Margin="5 5 10 0" VerticalAlignment="Center" TextWrapping="Wrap">Relay: Kantab will rely on external plugins that talk to it (such as the browser extension or an OpenTabletDriver plugin) to get as much info as possible about your pen including tilt and pressure, if supported.</TextBlock>
               </StackPanel>
               <StackPanel Classes="setting" Orientation="Horizontal" VerticalAlignment="Center">
                 <Button Classes="btn" Classes.tlScissorMode="{Binding SettingTopLeft}" Classes.brScissorMode="{Binding SettingBotomRight}" Click="BtnScreenScissor_OnClick" Name="btnScreenScissor" Width="70" Height="70" Padding="0">

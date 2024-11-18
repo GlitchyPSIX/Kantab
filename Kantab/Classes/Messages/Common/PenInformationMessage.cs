@@ -48,7 +48,9 @@ public class PenInformationMessage : KantabMessage
             .ToList();
 
         if (Extended) {
-            return bytesBaton.Concat(BitConverter.GetBytes(State.Pressure)).Concat(BitConverter.GetBytes(State.Tilt)).ToArray();
+            return bytesBaton.Concat(BitConverter.GetBytes(State.Pressure)).ToArray().Concat(BitConverter.GetBytes(State.Tilt))
+                // padding?
+                .Concat(new byte[]{00, 00}).ToArray();
         }
         else {
             return bytesBaton.Append((byte)(State.Pressure > 0 ? 1 : 0)).ToArray();

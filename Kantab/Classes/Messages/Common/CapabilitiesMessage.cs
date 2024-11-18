@@ -9,7 +9,7 @@ public class CapabilitiesMessage : KantabMessage {
         Features = features;
     }
 
-    public CapabilitiesMessage(byte bytes) : base(bytes) {
+    public CapabilitiesMessage(byte bytes) {
         Features = (ClientFeatures)bytes;
     }
 

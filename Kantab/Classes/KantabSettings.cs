@@ -13,6 +13,12 @@ public class KantabSettings
     public Rectangle ScreenRegion { get; set; } = new();
 
     /// <summary>
+    /// The Pen Provider. 0 is Mouse/WinTab, 1 is Relay
+    /// </summary>
+    [JsonPropertyName("penProvider")]
+    public byte PenProvider { get; set; } = 1;
+
+    /// <summary>
     /// How often to fetch from the saved Pen Provider in ms
     /// </summary>
     [JsonPropertyName("fetchRate")]
@@ -50,5 +56,6 @@ public class KantabSettings
         Autostart = false;
         ConstructFolder = null;
         Scale = 1.0f;
+        PenProvider = 1;
     }
 }

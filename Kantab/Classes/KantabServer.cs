@@ -22,8 +22,7 @@ using Kantab.WinAPI.Structs;
 
 namespace Kantab.Classes;
 
-public class KantabServer
-{
+public class KantabServer {
 
     public short Port = 7329;
     private string _prefix => $"http://localhost:{Port}/";
@@ -52,13 +51,12 @@ public class KantabServer
 
     private KantabSettings _loadedSettings;
     public KantabSettings LoadedSettings => _loadedSettings;
-    public IPenStateProvider PenStateProvider { get; set; } = new MousePenStateProvider();
+    public IPenStateProvider? PenStateProvider { get; set; }
     private Task _httpServerTask;
 
     private System.Timers.Timer _positionFetchTimer;
 
-    public KantabServer(KantabSettings config)
-    {
+    public KantabServer(KantabSettings config) {
         SetSettings(config);
         _positionFetchTimer = new();
 
@@ -70,11 +68,9 @@ public class KantabServer
         SetupRoutes();
 
         LoadConstructs();
-        if (_loadedSettings.ConstructFolder == null)
-        {
+        if (_loadedSettings.ConstructFolder == null) {
             string? firstConstruct = AvailableConstructs.Keys.FirstOrDefault();
-            if (firstConstruct == null)
-            {
+            if (firstConstruct == null) {
                 CurrentConstruct = null;
                 return;
             }
@@ -82,16 +78,14 @@ public class KantabServer
         }
     }
 
-    public void Start()
-    {
+    public void Start() {
         _positionFetchTimer.Start();
         Task.Run(BeginHttpServer);
         ServerStarted?.Invoke(this, EventArgs.Empty);
         Running = true;
     }
 
-    public void Stop()
-    {
+    public void Stop() {
         _positionFetchTimer?.Stop();
         _listener?.Stop();
         _listener?.Close();
@@ -99,55 +93,44 @@ public class KantabServer
         Running = false;
     }
 
-    public void SetSettings(KantabSettings config)
-    {
+    public void SetSettings(KantabSettings config) {
         _loadedSettings = config;
         Port = config.Port;
         float fetchRate = config.FetchRate;
 
         if (_loadedSettings.ScreenRegion.Empty) _loadedSettings.ScreenRegion = new Rectangle(1920, 0, 1920 * 2, 1080);
-        if (_positionFetchTimer != null)
-        {
+        if (_positionFetchTimer != null) {
             _positionFetchTimer.Interval = fetchRate;
         }
 
-        if (_loadedSettings.ConstructFolder != null)
-        {
+        if (_loadedSettings.ConstructFolder != null) {
             SelectConstruct(_loadedSettings.ConstructFolder);
         }
     }
 
-    private async Task BeginHttpServer()
-    {
-        try
-        {
+    private async Task BeginHttpServer() {
+        try {
             _listener = new HttpListener();
             _listener.Prefixes.Add(_prefix);
             _listener.Start();
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             Stop();
             ServerCatastrophe?.Invoke(this, e);
             return;
         }
 
-        while (true)
-        {
-            try
-            {
+        while (true) {
+            try {
                 HttpListenerContext httpCtx = await _listener.GetContextAsync();
-                if (httpCtx.Request.IsWebSocketRequest)
-                {
+                if (httpCtx.Request.IsWebSocketRequest) {
                     UpgradeToWebsocket(httpCtx);
                 }
-                else
-                {
+                else {
                     _ = _httpHandler.RunHandler(httpCtx);
                 }
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 Stop();
                 ServerCatastrophe?.Invoke(this, e);
                 break;
@@ -155,29 +138,24 @@ public class KantabServer
         }
     }
 
-    private void BroadcastPenState(object? sender, ElapsedEventArgs args)
-    {
-        if (!RegionSetupMode)
-        {
-            foreach (KantabClient client in _clients)
-            {
+    private void BroadcastPenState(object? sender, ElapsedEventArgs args) {
+        if (!RegionSetupMode) {
+            foreach (KantabClient client in _clients) {
                 if (!client.Ready || client.IsRelay) continue;
                 // sends pen position, normalized to relative (0, 1), input is absolute
-                client.SendMessage(new PenInformationMessage(false, PenStateProvider.CurrentPenState, _loadedSettings.ScreenRegion));
+                client.SendMessage(new PenInformationMessage(PenStateProvider.Extended, PenStateProvider?.CurrentPenState ?? new(), _loadedSettings.ScreenRegion));
             }
         }
-        else
-        {
+        else {
             // scissor setup mode, notify no clients
-            SetupModePositionReceived?.Invoke(this, PenStateProvider.CurrentPenState);
+            SetupModePositionReceived?.Invoke(this, PenStateProvider?.CurrentPenState ?? new());
         }
 
     }
 
-    private void ReceivePenState(object? sender, PenState recvState)
-    {
+    private void ReceivePenState(object? sender, PenState recvState) {
         // assume default absolute
-        bool absolute = sender != null ? ((KantabClient) sender).Features.HasFlag(Enums.ClientFeatures.ABSOLUTE_POSITION) : true;
+        bool absolute = sender != null ? ((KantabClient)sender).Features.HasFlag(Enums.ClientFeatures.ABSOLUTE_POSITION) : true;
 
         if (!absolute) {
             recvState.Position = recvState.DenormalizePosition(_loadedSettings.ScreenRegion);
@@ -186,20 +164,21 @@ public class KantabServer
         PositionRelayed?.Invoke(this, recvState);
     }
 
-    internal async void UpgradeToWebsocket(HttpListenerContext ctx)
-    {
-        try
-        {
+    internal async void UpgradeToWebsocket(HttpListenerContext ctx) {
+        try {
             WebSocketContext wsCtx = await ctx.AcceptWebSocketAsync("kantab-v1");
             KantabClient newClient = new KantabClient(this, wsCtx.WebSocket);
 
-            newClient.OnClientDisconnect += (s, graceful) =>
-            {
+            newClient.OnClientDisconnect += (s, graceful) => {
                 _clients.Remove(newClient);
-                if (newClient.PositionReceived != null)
-                {
+                if (newClient.PositionReceived != null) {
                     newClient.PositionReceived -= ReceivePenState;
                 }
+            };
+
+            newClient.RelayUpgrade += (s, o) => {
+
+                Console.Write("damn OK look at that RELAY_AUTHORITY go, ight buddy won't bother you");
             };
 
             newClient.PositionReceived += ReceivePenState;
@@ -207,8 +186,7 @@ public class KantabServer
             _clients.Add(newClient);
             newClient.SendMessage(new HelloMessage(), true);
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             ctx.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             ctx.Response.ContentType = "application/json";
             StreamWriter sw = new StreamWriter(ctx.Response.OutputStream);
@@ -218,23 +196,19 @@ public class KantabServer
         }
     }
 
-    public void LoadConstructs()
-    {
+    public void LoadConstructs() {
         AvailableConstructs.Clear();
         string[] filePaths = Directory.GetFiles(
             Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "Constructs"),
             "kantab.json", SearchOption.AllDirectories);
 
-        foreach (string filePath in filePaths)
-        {
+        foreach (string filePath in filePaths) {
             string jsonText = File.ReadAllText(filePath);
             ConstructMetadata? meta;
-            try
-            {
+            try {
                 meta = JsonSerializer.Deserialize<ConstructMetadata>(jsonText);
             }
-            catch
-            {
+            catch {
                 meta = null;
             }
             if (!meta.HasValue) continue;
@@ -250,17 +224,14 @@ public class KantabServer
         SelectConstruct(_loadedSettings.ConstructFolder);
     }
 
-    public void SelectConstruct(string? id)
-    {
+    public void SelectConstruct(string? id) {
         if (id == null || !AvailableConstructs.ContainsKey(id)) return;
         CurrentConstruct = AvailableConstructs[id];
     }
 
-    private void SetupRoutes()
-    {
+    private void SetupRoutes() {
         _httpHandler.Get(new Regex(@"^constructs/.*$"),
-            async (kCtx) =>
-            {
+            async (kCtx) => {
                 await KantabHttpFileServer.ServeDirectory(kCtx,
                     Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "Constructs"),
                     1);
@@ -268,8 +239,7 @@ public class KantabServer
         );
 
         _httpHandler.Get(new Regex(@"^settings/?$"),
-            async (kCtx) =>
-            {
+            async (kCtx) => {
                 ConstructMetadata? constr = CurrentConstruct;
                 await KantabHttpFileServer.ServeText(kCtx, JsonSerializer.Serialize(_loadedSettings),
                     "application/json");
@@ -277,8 +247,7 @@ public class KantabServer
         );
 
         _httpHandler.Get(new Regex(@"^settings/construct/?"),
-            async (kCtx) =>
-            {
+            async (kCtx) => {
                 ConstructMetadata? constr = CurrentConstruct;
                 await KantabHttpFileServer.ServeText(kCtx, JsonSerializer.Serialize(constr),
                     "application/json");
@@ -286,8 +255,7 @@ public class KantabServer
         );
 
         _httpHandler.Get(new Regex(@"^views/.*$/?$"),
-            async (kCtx) =>
-            {
+            async (kCtx) => {
                 await KantabHttpFileServer.ServeDirectory(kCtx,
                     Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "Views"),
                     1);

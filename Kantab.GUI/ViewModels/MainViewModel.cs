@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Data;
 using System.IO;
 using System.Reflection;
 using Kantab.Classes;
+using Kantab.Classes.PenStateProviders;
 using Kantab.GUI.Enums;
 using Rectangle = Kantab.Structs.Rectangle;
 
@@ -10,6 +12,8 @@ namespace Kantab.GUI.ViewModels;
 public partial class MainViewModel : ViewModelBase
 {
     private Rectangle _liveScissor;
+    public MousePenStateProvider MouseStateProv = new();
+    public KRelayPenStateProvider RelayStateProv;
     public Rectangle ScreenRegionScissor
     {
         get => _liveScissor;

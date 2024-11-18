@@ -28,7 +28,8 @@ S 02: Hello
 [len: 2] 
 ## 00
 
-Message sent to the client upon connecting. Client MUST respond with "C 02: Hello" to signify the client is ready to start accepting more Kantab-specific messages. This marks the client as active, and starts the ping timer for the client.
+Message sent to the client upon connecting. Client MUST respond with "C 02: Hello" to signify the client is ready to start accepting
+more Kantab-specific messages. This marks the client as active, and starts the ping timer for the client.
 
 Clients failing to return "02: Hello" within 3 seconds are disconnected.
 
@@ -39,7 +40,9 @@ S 03: Capabilities
 [len: 2] 
 ## [TT]
 
-TT (enum, byte): Bitfield describing the features the server supports. This bitfield is consistent with the enum "ClientFeatures". Client MAY respond with "C 03: Capabilities". The client MAY respond at any time after receiving this message as long as it is still responding to the heartbeat by "S 01: Ping".
+TT (enum, byte): Bitfield describing the features the server supports. This bitfield is consistent with the enum "ClientFeatures".
+Client MAY respond with "C 03: Capabilities". The client MAY respond at any time after receiving this message as long as it is still
+responding to the heartbeat by "S 01: Ping".
 
 --------------------------------------------------------------------
 
