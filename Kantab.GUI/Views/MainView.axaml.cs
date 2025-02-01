@@ -297,4 +297,8 @@ public partial class MainView : UserControl
         _server.PenStateProvider = (cbProvider?.SelectedIndex ?? 0 ) == 0 ? vm.MouseStateProv : vm.RelayStateProv; // lol
     }
 
+    private void BtnCopy_OnClick(object? sender, RoutedEventArgs e) {
+        EnsureMainWindow();
+        _myWin?.Clipboard.SetTextAsync($" http://localhost:{_server.LoadedSettings.Port}/views/large");
+    }
 }

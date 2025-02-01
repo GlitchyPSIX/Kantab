@@ -2,14 +2,20 @@
 
 public class EndOfLineMessage : KantabMessage
 {
-    public bool Ungraceful { get; }
+    public EndOfLineReason Reason { get; private set; }
 
-    public EndOfLineMessage(bool ungraceful) {
-        Ungraceful = ungraceful;
+    public EndOfLineMessage(EndOfLineReason reason) {
+        Reason = reason;
     }
 
     public override byte[] ToBytes()
     {
-        return new byte[] { 0xFF, (byte)(Ungraceful ? 1 : 0) };
+        return new byte[] { 0xFF, (byte)Reason };
     }
+}
+
+public enum EndOfLineReason {
+    NORMAL,
+    REFRESH,
+    ERROR
 }

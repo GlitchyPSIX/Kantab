@@ -8,6 +8,7 @@ using System.Timers;
 using Kantab.Classes.Extensions;
 using Kantab.Classes.Messages;
 using Kantab.Classes.Messages.Common;
+using Kantab.Classes.Messages.Server;
 using Kantab.Classes.PenStateProviders;
 using Kantab.Enums;
 using Kantab.Interfaces;
@@ -51,7 +52,7 @@ public class KantabClient {
         _clientSocket = clientSocket;
         _heartbeatTimer = new Timer(1000);
         _heartbeatTimer.Stop();
-        _heartbeatTimer.Elapsed += OnHeartbeatTick;
+        _heartbeatTimer.Elapsed += async (s, e) => await OnHeartbeatTick(s,e);
         _tkn = new CancellationTokenSource();
 
         Task.Run(ReceiveLoop, _tkn.Token);
@@ -59,7 +60,7 @@ public class KantabClient {
 
     const int MEMORY_BUFFER_LENGTH = 32;
 
-    async void ReceiveLoop() {
+    async Task ReceiveLoop() {
         var loopToken = _tkn.Token;
         MemoryStream outputStream = new MemoryStream(32);
         byte[] buffer = new byte[MEMORY_BUFFER_LENGTH];
@@ -98,6 +99,11 @@ public class KantabClient {
                     _heartbeatTimer.Start();
                     break;
                 }
+            case PingMessage ping:
+            {
+                MissedHeartbeats = 0;
+                break;
+            }
             case CapabilitiesMessage caps: {
                     if (caps.Features.HasFlag(ClientFeatures.RELAY_AUTHORITY)) {
                         RelayUpgrade?.Invoke(this, EventArgs.Empty);
@@ -110,12 +116,21 @@ public class KantabClient {
                     RelayPenState(penInfo.State);
                     break;
                 }
+            default:
+            {
+                // What is this?
+                _accumulatedWhoops++;
+                Console.WriteLine("Received: " + string.Join(" ", buf.Select(x => x.ToString("X2")).ToArray()));
+                if (_accumulatedWhoops >= 4) {
+                    Task.Run(async () => { await SendMessage(new GoodbyeMessage(true), true); }).Wait();
+                }
+                SendMessage(new WhoopsMessage(), true);
+                break;
+            }
         }
-
-        Console.WriteLine("Received: " + string.Join(" ", buf.Select(x => x.ToString("X2")).ToArray()));
     }
 
-    public async void SendMessage(KantabMessage message, bool overrideReady = false) {
+    public async Task SendMessage(KantabMessage message, bool overrideReady = false) {
         if (_clientSocket.State != WebSocketState.Open) return;
         if (!Ready && !overrideReady) return;
 
@@ -133,14 +148,18 @@ public class KantabClient {
             PositionReceived?.Invoke(this, ps);
     }
 
-    private async void OnHeartbeatTick(object? sender, ElapsedEventArgs args) {
+    private async Task OnHeartbeatTick(object? sender, ElapsedEventArgs args) {
         if (_clientSocket.State != WebSocketState.Open) return;
         if (!Ready) return;
 
         _accumulatedWhoops = 0;
         await _wsSemaphore.WaitAsync();
         try {
+            if (MissedHeartbeats >= 5) {
+
+            }
             await _clientSocket.SendKantabMessage(new PingMessage());
+            MissedHeartbeats++;
         }
         finally {
             _wsSemaphore.Release();

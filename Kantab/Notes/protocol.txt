@@ -1,4 +1,4 @@
-Kantab Protocol Specification
+﻿Kantab Protocol Specification
 =============================
 
 This document aims to explain the protocol Kantab's server uses to communicate with the client.
@@ -10,10 +10,14 @@ Messages are displayed in byte separations, hexadecimal.
 Any values not enclosed within brackets ( [] ) shall be treated as-is in hexadecimal.
 Length is in decimal.
 
+This repo is supposed to be the reference implementation, so this document also serves as a checklist to determine protocol completeness.
+✅ will be next to the message if it's currently implemented.
+⚠ will be next to the message if it's only partially implemented.
+
 Server Messages
 ===============
 
-S 01: Ping
+S 01: Ping ✅
 
 [len: 2] 
 ## 00
@@ -23,7 +27,7 @@ If 5 heartbeats miss, the client is disconnected.
 
 --------------------------------------------------------------------
 
-S 02: Hello
+S 02: Hello ✅
 
 [len: 2] 
 ## 00
@@ -35,7 +39,7 @@ Clients failing to return "02: Hello" within 3 seconds are disconnected.
 
 --------------------------------------------------------------------
 
-S 03: Capabilities
+S 03: Capabilities ✅
 
 [len: 2] 
 ## [TT]
@@ -46,7 +50,7 @@ responding to the heartbeat by "S 01: Ping".
 
 --------------------------------------------------------------------
 
-S 04: Pen Information
+S 04: Pen Information ✅
 
 [len: 11 or 18] 
 ## 0[E] [?????????????????????]
@@ -54,7 +58,7 @@ S 04: Pen Information
 E (boolean, bit inside byte): Extended Information
 Extended Information specifies whether this information includes extra tablet attributes such as pressure and tilt.
 
-S 04-00: IF NOT EXTENDED
+S 04-00: IF NOT EXTENDED ✅
 ---
 
 [len: 11] 
@@ -66,7 +70,7 @@ PP (byte) : Pressure, but discrete (0 if not pressed, 1 if pressed)
 
 (0, 0) starts in the TOP LEFT CORNER.
 
-S 04-01: IF EXTENDED
+S 04-01: IF EXTENDED ✅
 ---
 
 [len: 18] 
@@ -93,7 +97,7 @@ requesting the user to reload.
 
 --------------------------------------------------------------------
 
-S FE: Whoops
+S FE: Whoops ✅
 
 [len: 2]
 ## 00
@@ -104,7 +108,7 @@ Too many "whoops" between heartbeats and the client is disconnected.
 
 --------------------------------------------------------------------
 
-S FF: Goodbye
+S FF: Goodbye ⚠
 
 [len: 2]
 ## [BB]
@@ -123,7 +127,7 @@ If errored out, the server will send nothing back and the server application sho
 Client Messages
 ===============
 
-C 01: Pong
+C 01: Pong ✅
 
 [len: 2] 
 ## 00
@@ -132,7 +136,7 @@ Sent to the server in response to "S 01: Ping".
 
 --------------------------------------------------------------------
 
-C 02: Hello
+C 02: Hello ✅
 
 [len: 2] 
 ## 00
@@ -141,7 +145,7 @@ Sent to the server to signify the client is ready to accept messages, sent after
 
 --------------------------------------------------------------------
 
-C 03: Capabilities
+C 03: Capabilities ⚠
 
 [len: 2] 
 ## [CC]
@@ -152,7 +156,7 @@ Sent to the server to specify what the client wants from the server. Ideally thi
 
 --------------------------------------------------------------------
 
-C 04: Pen Information
+C 04: Pen Information ✅
 
 [len: 10 or 18] 
 ## 0[E] [?????????????????????]
@@ -165,16 +169,16 @@ flag given when connecting), otherwise server will respond with "S FE: Whoops".
 
 --------------------------------------------------------------------
 
-C FF: End Of The Line
+C FF: End Of The Line ✅ (⚠ for server handling)
 
 [len: 2]
 ## [EE]
 
-EE: 01 if the client requested disconnection due to an error.
+EE: 01 if the client requested immediate disconnection due to a hard refresh, 02 if it was because of an error.
 
 Sent to the server when the client willfully requests a disconnect from the server.
 The client SHOULD NOT disconnect immediately after sending this: graceful disconnection is done only when "S FF: Goodbye" is received.
-If [EE] is 01 however, "S FF: Goodbye" is not sent back.
+If [EE] is 01 or 02 however, "S FF: Goodbye" is not sent back and it can disconnect immediately.
 
 
 --------------------------------------------------------------------

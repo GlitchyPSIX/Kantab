@@ -15,8 +15,16 @@ public abstract class KantabMessage {
 
     }
 
+    /// <summary>
+    /// Turns a byte array into a Kantab Message. Intended only for use when receiving messages over a communication line.
+    /// </summary>
+    /// <param name="bytes">The byte array to turn into a Kantab Message</param>
+    /// <returns>A typed Kantab message if valid, a Generic Kantab Message if invalid or unimplemented</returns>
     public static KantabMessage FromBytes(ArraySegment<byte> bytes) {
         switch (bytes[0]) {
+            case 01: {
+                return new PingMessage();
+            }
             case 02: {
                     return new HelloMessage();
                 }
@@ -38,7 +46,6 @@ public abstract class KantabMessage {
                         ps.Tilt = 0;
                     }
                     return new PenInformationMessage(extended, ps);
-
                 }
             default: {
                     return new GenericKantabMessage(bytes.Array ?? new byte[] { });
