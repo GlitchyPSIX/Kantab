@@ -11,6 +11,9 @@ using Kantab.Classes.Router.Middleware;
 
 namespace Kantab.Classes.Router;
 
+/// <summary>
+/// Affectionately referred to as Curly
+/// </summary>
 public class KantabHttpHandler
 {
     private Dictionary<Tuple<Regex, string>, Func<KantabHttpContext, Task>[]> _routeMappings = new();

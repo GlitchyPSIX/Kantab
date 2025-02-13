@@ -200,7 +200,7 @@
     </Style>
 
       <Style Selector="Panel.bg">
-      <Setter Property="Background" Value="#366FFF"></Setter>
+      <Setter Property="Background" Value="#3a9aff"></Setter>
     </Style>
 
     <Style Selector="TabControl TabItem">

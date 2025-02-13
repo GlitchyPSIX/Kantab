@@ -3,6 +3,7 @@ using System.Data.SqlTypes;
 using System.IO;
 using System.Net;
 using System.Net.Mime;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using HandlebarsDotNet;
@@ -20,7 +21,10 @@ public static class KantabHttpError
         var handlebarsData = new
         {
             scode = (int)status,
-            smsg = ReasonPhrases.GetReasonPhrase((int)status)
+            smsg = ReasonPhrases.GetReasonPhrase((int)status),
+            version = Assembly.GetExecutingAssembly()?
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+                .InformationalVersion
         };
         string httpString = precompiledTemplate(handlebarsData);
         
