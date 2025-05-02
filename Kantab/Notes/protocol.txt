@@ -86,7 +86,7 @@ NOTE ABOUT TILT: It is possible that the returned value is exaggerated by driver
 
 --------------------------------------------------------------------
 
-S FD: Consider Refreshing Assets
+S FD: Consider Refreshing Assets ✅
 
 [len: 2] 
 ## 00
