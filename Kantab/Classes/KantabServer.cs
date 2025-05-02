@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Kantab.Classes.Messages.Common;
+using Kantab.Classes.Messages.Server;
 using Kantab.Classes.PenStateProviders;
 using Kantab.Classes.Router;
 using Kantab.Classes.Router.Middleware;
@@ -155,7 +156,7 @@ public class KantabServer {
 
     private void ReceivePenState(object? sender, PenState recvState) {
         // assume default absolute
-        bool absolute = sender != null ? ((KantabClient)sender).Features.HasFlag(Enums.ClientFeatures.ABSOLUTE_POSITION) : true;
+        bool absolute = sender == null || ((KantabClient)sender).Features.HasFlag(Enums.ClientFeatures.ABSOLUTE_POSITION);
 
         if (!absolute) {
             recvState.Position = recvState.DenormalizePosition(_loadedSettings.ScreenRegion);
@@ -227,6 +228,11 @@ public class KantabServer {
     public void SelectConstruct(string? id) {
         if (id == null || !AvailableConstructs.ContainsKey(id)) return;
         CurrentConstruct = AvailableConstructs[id];
+        ConsiderRefreshMessage msg = new ConsiderRefreshMessage();
+
+        foreach (KantabClient kantabClient in _clients) {
+            kantabClient.SendMessage(msg);
+        }
     }
 
     private void SetupRoutes() {
