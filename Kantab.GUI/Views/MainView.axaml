@@ -21,13 +21,13 @@
               <TextBlock x:Name="lbServerStatus" TextAlignment="Left" Classes="h1 strong"></TextBlock>
             </StackPanel>
               <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                  <TextBlock Margin="0 0 0 10" Classes="label" HorizontalAlignment="Center">Hand/Arm URL (for OBS): http://localhost:</TextBlock>
+                  <TextBlock Margin="0 0 0 10" Classes="label" HorizontalAlignment="Center">Large Hand URL (for OBS): http://localhost:</TextBlock>
                   <TextBlock Classes="label" Name="tbPort">7329</TextBlock>
                   <TextBlock Classes="label">/views/large</TextBlock>
               </StackPanel>
-              <Button Classes="btn" Margin="0 0 0 10" Name="btnCopy" Click="BtnCopy_OnClick">Copy OBS URL</Button>
             <Button Classes="btn" Margin="0 0 0 10" Name="btnStartSrv" Click="BtnStartSrv_OnClick">Start/Stop Kantab Server</Button>
-            <Button Classes="btn" Name="btnExit" Click="BtnExit_OnClick">Fully Exit Kantab!</Button>
+              <Button Classes="btn" Margin="0 0 0 10" Name="btnCopy" Click="BtnCopy_OnClick">Open Kantab QuickStart Page (server must be ON)</Button>
+              <Button Classes="btn" Name="btnExit" Click="BtnExit_OnClick">Fully Exit Kantab!</Button>
           </StackPanel>
         </Border>
 

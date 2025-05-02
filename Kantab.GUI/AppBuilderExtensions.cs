@@ -24,7 +24,7 @@ namespace DesktopNotifications.Avalonia
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                var context = WindowsApplicationContext.FromCurrentProcess();
+                var context = WindowsApplicationContext.FromCurrentProcess("GLITCHYPSI Kantab");
                 manager = new WindowsNotificationManager(context);
             }
             else if (Environment.OSVersion.Platform == PlatformID.Unix)

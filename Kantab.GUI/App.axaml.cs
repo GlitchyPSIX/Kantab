@@ -6,7 +6,6 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Notifications;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-using DesktopNotifications.Avalonia;
 using Kantab.GUI.ViewModels;
 using Kantab.GUI.Views;
 
