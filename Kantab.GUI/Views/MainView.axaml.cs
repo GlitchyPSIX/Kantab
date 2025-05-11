@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Avalonia;
@@ -299,6 +300,25 @@ public partial class MainView : UserControl
 
     private void BtnCopy_OnClick(object? sender, RoutedEventArgs e) {
         EnsureMainWindow();
-        _myWin?.Clipboard.SetTextAsync($" http://localhost:{_server.LoadedSettings.Port}/views/large");
+        Process.Start(new ProcessStartInfo($"http://localhost:{_server.LoadedSettings.Port}/views/") {UseShellExecute = true});
+    }
+
+    private void BtnGPSI_OnClick(object? sender, RoutedEventArgs e) {
+        EnsureMainWindow();
+        Process.Start(new ProcessStartInfo("https://glitchypsi.xyz") { UseShellExecute = true });
+    }
+
+    private void BtnGithub_OnClick(object? sender, RoutedEventArgs e) {
+        EnsureMainWindow();
+        Process.Start(new ProcessStartInfo("https://github.com/GlitchyPSIX/Kantab") { UseShellExecute = true });
+    }
+
+    private void BtnDonate_OnClick(object? sender, RoutedEventArgs e) {
+        EnsureMainWindow();
+        Process.Start(new ProcessStartInfo("https://ko-fi.com/glitchypsi") { UseShellExecute = true });
+    }
+    private void BtnItch_OnClick(object? sender, RoutedEventArgs e) {
+        EnsureMainWindow();
+        Process.Start(new ProcessStartInfo("https://glitchypsi.itch.io") { UseShellExecute = true });
     }
 }

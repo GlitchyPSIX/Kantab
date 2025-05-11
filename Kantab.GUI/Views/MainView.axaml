@@ -80,7 +80,7 @@
               </StackPanel>
               <StackPanel Classes="setting" Orientation="Vertical" VerticalAlignment="Center">
                  <TextBlock Margin="5 0 0 0" VerticalAlignment="Center" TextWrapping="Wrap">Mouse/Wintab: Kantab will attempt to get your mouse's position and click to control the pen. Does not support pressure.</TextBlock>
-                 <TextBlock Margin="5 5 10 0" VerticalAlignment="Center" TextWrapping="Wrap">Relay: Kantab will rely on external plugins that talk to it (such as the browser extension or an OpenTabletDriver plugin) to get as much info as possible about your pen including tilt and pressure, if supported.</TextBlock>
+                 <TextBlock Margin="5 5 10 0" VerticalAlignment="Center" TextWrapping="Wrap">Relay: Kantab will rely on external plugins that talk to it (such as a browser extension or an OpenTabletDriver plugin) to get as much info as possible about your pen including tilt and pressure, if supported.</TextBlock>
               </StackPanel>
               <StackPanel Classes="setting" Orientation="Horizontal" VerticalAlignment="Center">
                 <Button Classes="btn" Classes.tlScissorMode="{Binding SettingTopLeft}" Classes.brScissorMode="{Binding SettingBotomRight}" Click="BtnScreenScissor_OnClick" Name="btnScreenScissor" Width="70" Height="70" Padding="0">
@@ -102,15 +102,17 @@
           <Border Classes="tabWrap">
               <DockPanel Margin="10">
                   <StackPanel Height="30" Orientation="Horizontal" HorizontalAlignment="Center" DockPanel.Dock="Bottom">
-                      <Button Classes="btn" Width="120" Name="btnGPSI">GLITCHYPSI</Button>
-                      <Button Classes="btn" Margin="5 0 0 0" Width="120" Name="btnGithub">Github page</Button>
-                      <Button Classes="btn" Margin="5 0 0 0" Width="90" Name="btnDonate">Ko-fi</Button>
-                      <Button Classes="btn" Margin="5 0 0 0" Width="90" Name="btnItch">itch.io</Button>
+                      <Button Classes="btn" Width="120" Name="btnGPSI" Click="BtnGPSI_OnClick">GLITCHYPSI</Button>
+                      <Button Classes="btn" Margin="5 0 0 0" Width="120" Click="BtnGithub_OnClick" Name="btnGithub">Github page</Button>
+                      <Button Classes="btn" Margin="5 0 0 0" Width="90" Click="BtnDonate_OnClick" Name="btnDonate">Ko-fi</Button>
+                      <Button Classes="btn" Margin="5 0 0 0" Width="90" Click="BtnItch_OnClick" Name="btnItch">itch.io</Button>
                   </StackPanel>
                   <StackPanel HorizontalAlignment="Center">
                       <Image Margin="8 8 8 12" Source="/Assets/kantablogo.png" Stretch="Uniform" />
+                      <TextBlock Classes="label" FontStyle="Italic" FontSize="11" Margin="3" HorizontalAlignment="Center" Text="don't be mean!" />
                       <TextBlock Classes="label" FontSize="11" Margin="3" HorizontalAlignment="Center" Text="customizable hand overlay companion for artist streamers" />
                       <TextBlock Classes="label" HorizontalAlignment="Center" Text="{Binding VersionString}" />
+                      <TextBlock Classes="label" FontSize="11" Margin="3" HorizontalAlignment="Center" Text="there are no automatic updates! check every now and then!" />
                   </StackPanel>
               </DockPanel>
           </Border>

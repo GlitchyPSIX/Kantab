@@ -42,7 +42,9 @@ public partial class MainViewModel : ViewModelBase
     public bool SettingBotomRight => _scissorState == ScissorSetupState.BOTTOMRIGHT;
     public bool SettingRectangle => _scissorState != ScissorSetupState.NONE;
 
-    public string VersionString => $"version v{Assembly.GetExecutingAssembly().GetName().Version.ToString(3)}";
+    public string VersionString => $"version v{Assembly.GetExecutingAssembly()
+        .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+        .InformationalVersion}";
 
     public string ConfigPath => Path.Join(AppDomain.CurrentDomain.BaseDirectory, "config.json");
 }

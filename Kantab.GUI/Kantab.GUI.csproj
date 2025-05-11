@@ -4,9 +4,10 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <VersionPrefix>1.0</VersionPrefix>
+    <VersionPrefix>0.1</VersionPrefix>
     <VersionSuffix>beta</VersionSuffix>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
 
