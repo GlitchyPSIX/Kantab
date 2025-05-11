@@ -260,10 +260,18 @@ public class KantabServer {
             }
         );
 
-        _httpHandler.Get(new Regex(@"^views/.*$/?$"),
+        _httpHandler.Get(new Regex(@"^views/.*/?$"),
             async (kCtx) => {
                 await KantabHttpFileServer.ServeDirectory(kCtx,
                     Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "Views"),
+                    1);
+            }
+        );
+
+        _httpHandler.Get(new Regex(@"^img/.*/?$"),
+            async (kCtx) => {
+                await KantabHttpFileServer.ServeDirectory(kCtx,
+                    Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty, "Views/img"),
                     1);
             }
         );
