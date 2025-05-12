@@ -46,6 +46,6 @@ export default defineConfig({
       }
     }
   },
-  base: "/views",
+  base: "/views/",
   plugins: [ nunjucks(), removeConstructsFolder()]
 })
