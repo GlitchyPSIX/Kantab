@@ -1,0 +1,9 @@
+{
+    "name": "Curly - Spud Tablet Compatible",
+    "author": "GlitchyPSI",
+    "description": "Curly's arm. Intended to use as a Spud Tablet compatible base.\nIf you haven't changed the offsets for your own Spud Tablet assets, using your Spud Tablet hand is as easy as just replacing the images in the folder of this Construct.",
+    "constructs": {
+        "large": "large.json",
+        "small": "small.json"
+    }
+}

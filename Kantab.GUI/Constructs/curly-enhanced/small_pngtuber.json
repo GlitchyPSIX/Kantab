@@ -1,0 +1,70 @@
+{
+    "staticLayers": [
+        {
+            "name": "tablet",
+            "mainTexturePath": "./pngtuber/curlypngtab.png",
+            "offset": {
+                "x": 0,
+                "y": 331
+            },
+            "pivot": {
+                "x": 0,
+                "y": 0
+            }
+        },
+        {
+            "name": "curly",
+            "mainTexturePath": "./pngtuber/curlypng1.png",
+            "offset": {
+                "x": 108,
+                "y": 0
+            },
+            "pivot": {
+                "x": 0,
+                "y": 0
+            },
+            "behind": true
+        }
+    ],
+    "layers": [
+        {
+            "name": "hand",
+            "mainTexturePath": "./pngtuber/curlypnghand1.png",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "pivot": {
+                "x": 12,
+                "y": 99
+            },
+            "rotation": {
+                "type": "general",
+                "mult": -1.6
+            }
+        }
+    ],
+    "tiltStyle": "kantab-sim",
+    "baseOffset": {
+        "x": 0,
+        "y": 0
+    },
+    "confineQuad": {
+        "topLeft": {
+            "x": 269,
+            "y": 357
+        },
+        "topRight": {
+            "x": 22,
+            "y": 358
+        },
+        "bottomLeft": {
+            "x": 275,
+            "y": 499
+        },
+        "bottomRight": {
+            "x": 48,
+            "y": 483
+        }
+    }
+}

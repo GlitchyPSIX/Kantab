@@ -18,6 +18,90 @@
 
   <ItemGroup>
     <None Remove="Assets\kantabScreenSegment.png" />
+    <None Remove="Constructs\curly-enhanced\Arm.png" />
+    <None Remove="Constructs\curly-enhanced\Hand.png" />
+    <None Remove="Constructs\curly-enhanced\kantab.json" />
+    <None Remove="Constructs\curly-enhanced\large.json" />
+    <None Remove="Constructs\curly-enhanced\pngtuber\curlypng1.png" />
+    <None Remove="Constructs\curly-enhanced\pngtuber\curlypnghand1.png" />
+    <None Remove="Constructs\curly-enhanced\pngtuber\curlypngtab.png" />
+    <None Remove="Constructs\curly-enhanced\small.json" />
+    <None Remove="Constructs\curly-enhanced\small_pngtuber.json" />
+    <None Remove="Constructs\curly-enhanced\Tablet.png" />
+    <None Remove="Constructs\curly-enhanced\TabletHand.png" />
+    <None Remove="Constructs\curly-enhanced\Tablet_Full.png" />
+    <None Remove="Constructs\curly-spud\Arm.png" />
+    <None Remove="Constructs\curly-spud\Hand.png" />
+    <None Remove="Constructs\curly-spud\kantab.json" />
+    <None Remove="Constructs\curly-spud\large.json" />
+    <None Remove="Constructs\curly-spud\small.json" />
+    <None Remove="Constructs\curly-spud\Tablet.png" />
+    <None Remove="Constructs\curly-spud\TabletHand.png" />
+    <None Remove="Constructs\curly-spud\Tablet_Full.png" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Content Include="Constructs\curly-enhanced\Arm.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-enhanced\Hand.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-enhanced\kantab.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-enhanced\large.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-enhanced\pngtuber\curlypng1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-enhanced\pngtuber\curlypnghand1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-enhanced\pngtuber\curlypngtab.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-enhanced\small.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-enhanced\small_pngtuber.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-enhanced\Tablet.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-enhanced\TabletHand.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-enhanced\Tablet_Full.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-spud\Arm.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-spud\Hand.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-spud\kantab.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-spud\large.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-spud\small.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-spud\Tablet.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-spud\TabletHand.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Constructs\curly-spud\Tablet_Full.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

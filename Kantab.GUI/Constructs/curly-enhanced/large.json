@@ -1,0 +1,37 @@
+{
+    "layers": [
+        {
+            "name": "hand",
+            "mainTexturePath": "Hand.png",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "pivot": {
+                "x": 0,
+                "y": 0
+            }
+        },
+        {
+            "name": "arm",
+            "mainTexturePath": "Arm.png",
+            "offset": {
+                "x": 522,
+                "y": 469
+            },
+            "pivot": {
+                "x": 522,
+                "y": 469
+            },
+            "rotation":{
+                "type": "general",
+                "mult": -0.5
+            }
+        }
+    ],
+    "tiltStyle": "kantab-sim",
+    "baseOffset": {
+        "x": 100,
+        "y": 100
+    }
+}

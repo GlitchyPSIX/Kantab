@@ -1,0 +1,9 @@
+{
+    "name": "Curly - Kantab Enhanced",
+    "author": "GlitchyPSI",
+    "description": "Curly's arm. Uses Kantab's unique features where useful.",
+    "constructs": {
+        "large": "large.json",
+        "small": "small_pngtuber.json"
+    }
+}

@@ -16,6 +16,7 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
+    <AssemblyName>KantabDesktop</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="kantab.ico" />

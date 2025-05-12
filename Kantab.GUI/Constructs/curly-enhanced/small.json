@@ -1,0 +1,57 @@
+{
+    "staticLayers": [
+        {
+            "name": "tablet",
+            "mainTexturePath": "Tablet.png",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "pivot": {
+                "x": 0,
+                "y": 0
+            }
+        }
+    ],
+    "layers": [
+        {
+            "name": "hand",
+            "mainTexturePath": "TabletHand.png",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "pivot": {
+                "x": 155,
+                "y": 302
+            },
+            "rotation": {
+                "type": "general",
+                "mult": -1.25
+            }
+        }
+    ],
+    "tiltStyle": "spud",
+    "baseOffset": {
+        "x": 0,
+        "y": 0
+    },
+    "confineQuad": {
+        "topLeft": {
+            "x": 764,
+            "y": 280
+        },
+        "topRight": {
+            "x": 193,
+            "y": 279
+        },
+        "bottomLeft": {
+            "x": 723,
+            "y": 492
+        },
+        "bottomRight": {
+            "x": 239,
+            "y": 492
+        }
+    }
+}
