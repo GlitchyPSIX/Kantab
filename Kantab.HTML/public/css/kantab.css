@@ -1,0 +1,190 @@
+body,
+html {
+    margin: 0;
+    padding: 0;
+    height: auto;
+    width: 100%;
+    background-color: #3a9aff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.main-grid {
+    display: grid;
+    grid-template-columns: 20% 1fr;
+    gap: 0.5rem;
+    margin: 1rem;
+}
+
+code {
+    background: #EEE;
+    border: 1px #CECECE solid;
+    padding: 0.125em;
+    font-size: 1.25em;
+    border-radius: 0.25em;
+}
+
+pre>code {
+    background: initial;
+    border: initial;
+    border: initial;
+    font-size: 1.25em;
+    border-radius: 0.25em;
+}
+
+pre.codeblock {
+    width: 100%;
+    display: block;
+    background: #EEE;
+    border: 1px #CECECE solid;
+    padding: 0.5em;
+    font-size: 1.25em;
+    border-radius: 0.25em;
+    font-family: monospace;
+    margin: 1em 0;
+    white-space: pre;
+}
+
+.type {
+    font-size: 0.75em;
+}
+
+.ktab-logo{
+    margin: 1.5rem 0 0.25rem 1rem;
+    width:20%;
+}
+
+.btn {
+    padding: 0.5rem;
+    font-weight: bold;
+    font-size: 1em;
+    border: 2px solid black;
+    border-radius: 0.25rem;
+    background: white;
+    color: black;
+}
+
+.guidebook-ch {
+    color:black;
+    font-size: 1.5em;
+    list-style-type: none;
+    width: 100%;
+    margin: 0.0125em 0;
+    border-left: 3px solid black;
+}
+
+.guidebook-index {
+    display: grid;
+    gap:1em;
+    width: 70%;
+    min-width: 70%;
+    grid-template-columns: 1fr 1fr;
+}
+
+.guidebook-highlight {
+    padding: 0.5rem;
+    border-left: 3px solid #3a9aff;
+}
+
+.guidebook-highlight .info {
+    font-variant-caps: all-petite-caps;
+    font-weight: bold;
+    margin: 0.25em 0;
+    display: inline-block;
+}
+
+.guidebook-highlight .info::before {
+    content: "ℹ "
+}
+
+.navi {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.navi ul {
+    padding: 0;
+}
+
+.navi li {
+    color:black;
+    list-style-type: none;
+    width: 100%;
+    margin: 0.25em 0;
+    border-left: 1px solid black;
+}
+
+.navi a, .guidebook-ch a {
+    color:inherit;
+    display: block;
+    font-weight: bold;
+    width: 100%;
+    padding: 0.25em;
+    text-decoration: none;
+}
+
+.navi li:hover, .guidebook-ch:hover {
+    background: #DEDEDE;
+}
+
+.navi li:active, .guidebook-ch:active {
+    background: #FFF;
+    filter:invert(100);
+}
+
+
+.btn:hover{
+    box-shadow: 0.125rem 0.125rem 0 black;
+}
+
+.btn:active{
+    transform: translate(0.125rem, 0.125rem);
+    background: black;
+    color: white;
+    box-shadow: none;
+}
+
+td, th{
+    border: 1px black solid;
+    padding: .25em;
+}
+
+.islet {
+    min-height: 50vh;
+    position: relative;
+    padding: 1rem;
+    border: 4px solid black;
+    border-radius: 1rem;
+    box-shadow: 0.5rem 0.5rem 0 black;
+    overflow: hidden;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEABAMAAACuXLVVAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAGUExURf///+/v7x4vVCkAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAFBhaW50Lk5FVCA1LjEuMvu8A7YAAAC2ZVhJZklJKgAIAAAABQAaAQUAAQAAAEoAAAAbAQUAAQAAAFIAAAAoAQMAAQAAAAIAAAAxAQIAEAAAAFoAAABphwQAAQAAAGoAAAAAAAAAYAAAAAEAAABgAAAAAQAAAFBhaW50Lk5FVCA1LjEuMgADAACQBwAEAAAAMDIzMAGgAwABAAAAAQAAAAWgBAABAAAAlAAAAAAAAAACAAEAAgAEAAAAUjk4AAIABwAEAAAAMDEwMAAAAADp1fY4ytpsegAAAKBJREFUeNrtzjEBADAQA6G3cP7Nti6ygAJuq25LQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQOAHGhMYB+oBgW1DecDdNkoAAAAASUVORK5CYII=) repeat;
+    background-size: 120px;
+}
+
+i.curly{
+    clip-rule: evenodd;
+    display: block;
+width: 256px;
+height: 256px;
+position: absolute;
+bottom: 0px;
+right: 0px;
+pointer-events: none;
+background: url("/img/curlyindex.png");
+}
+
+i.curly2{
+    clip-rule: evenodd;
+    display: block;
+width: 256px;
+height: 256px;
+position: absolute;
+bottom: 0px;
+right: 0px;
+pointer-events: none;
+background: url("/img/curlyindex2.png");
+}
+
+.titlebar {
+    height: 4rem;
+}

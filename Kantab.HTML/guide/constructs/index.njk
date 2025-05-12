@@ -1,0 +1,95 @@
+{% extends "src/html/main.njk" %} {% block content %}
+
+<div style="width: 82%">
+  <h1>Construct making and editing</h1>
+  <p>
+    Kantab Constructs are fairly simple in structure: Inside the folder that
+    contains its files, there are at minimum a few files:
+  </p>
+  <ol>
+    <li>
+        <code>kantab.json</code>, which has the metadata for the Construct, and defines which files are the large and small hands,
+    </li>
+    <li>
+        <code>large.json</code>, which is the Large Hand Construct, the one you'd usually use as a hand overlay in your streaming software, referenced in the file above,
+    </li>
+    <li>
+        at least one image file, which is referenced in the file above, which is the actual image for your hand, or similar.
+    </li>
+  </ol>
+  <p>An example <code>kantab.json</code> would look something like this:</p>
+  <pre class="codeblock"><code class="language-json match-braces rainbow-braces">{
+    "name": "Curly's Hand",
+    "author": "GlitchyPSI",
+    "description": "A Construct that resembles Curly's hand.",
+    "constructs": {
+        "large": "large.json",
+        "small": null
+    }
+}</code></pre>
+
+  <p>...and the most barebones usable <code>large.json</code> you could have is as follows:</p>
+    <pre class="codeblock"><code class="language-json match-braces rainbow-braces">{
+    "staticLayers": [],
+    "layers": [
+        {
+            "name": "hand",
+            "mainTexturePath": "hand.png",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "pivot": {
+                "x": 0,
+                "y": 0
+            }
+        }
+    ],
+    "tiltStyle": "spud",
+    "baseOffset": {
+        "x": 0,
+        "y": 0
+    }
+}</code></pre>
+  <p><code>large.json</code>'s structure is a Kantab Construct. Let's unpack that file's contents, as they're more complex.</p>
+  <p>First we've got the <code>staticLayers</code> array. It's used for Layers of the Construct that do not move with the pen position, like
+  an overlay or a background tablet.</p>
+  <p>You might be wondering "why would I like to have static layers in my hand overlay?", and the question is valid because the idea is that the
+  large hand ovelay is covering the screen capture that shows your drawing software below, but there is a reason: as mentioned before this is 
+  a Construct. Kantab supports loading 2 different Constructs as specified in the <code>kantab.json</code> file, as <code>large</code> and 
+  <code>small</code>. As an example, a Large Hand construct would have just the hand layers, and a Small construct could have simpler layers
+  and static layers, but they're both Constructs, so they follow the same schema.</p>
+  <p>Moving on, the <code>layers</code> array. Each Layer inside this array is an object that follows the Layer schema.</p>
+  <p>Each Layer has a name and an image, and can also define its offset (position in relation to the whole construct), pivot (point of reference for
+  rotation and scale), scale, rotation settings (how it will turn in response to the Construct's rotation, or pressure input), and tinting
+  settings. Each of these settings is its own object inside the Layer object with its respective name. You can see the full possible structure
+  of a Layer in the <a href="../dev/datatypes/#KantabConstructLayer">Developer Resources section that defines KantabConstructLayer</a>.</p>
+  <p>This example file has only one layer. The texture file is called "hand.png". It doesn't rotate additionally, has no scale or tint settings,
+    and both its offset and pivot are at (0, 0) (the top left corner).</p>
+    <p>These missing settings can be added, though. You can add by yourself every object to specify how the feature in the layer will work.
+        Only one of them is respected, though, and they must have their right property names. Check out the Developer Resources for the structure
+        of those other options.</p>
+    <p>Worth mentioning that Layers in here are the same kind of Layers in the static layers.</p>
+    <p>Layers are independent of each other, but through changing pivots and rotation multipliers you can make them seem like they're connected,
+        like chain links. The Curly Constructs are an example of this! Two layers comprise the palm of the hand and the arm, and one curves inwards
+        when the Construct tilts.</p>
+  
+  <p>Next is the <code>tiltStyle</code>. There's a few kinds of tiltStyles:</p>
+  <ul>
+    <li><strong>none</strong>, which means it will not rotate at all.</li>
+    <li><strong>kantab-sim</strong>, which will "simulate hand tilt" based on the pen's position, but if the program receives tilt information from
+    your pen, it will use the pen tilt instead.</li>
+    <li><strong>kantab-strict</strong>, which means it will only rotate using the tilt information from your pen, if provided.</li>
+    <li><strong>spud</strong>, which will "simulate hand tilt" the same way VirtualGraves's Spud Tablet does it (guesstimate based in pen position),
+    ignoring pen tilt.</li>
+  </ul>
+  <p>This example file uses the <strong>spud</strong> tilt style.</p>
+  <p>Finally we have the <code>baseOffset</code>. This moves the Construct's rotation point after all layers have been positioned. It's usually used
+  to move the Construct to position the tip of the pen at (0, 0), so it's perfectly aligned with the pen position. This example file has no offset.</p>
+  <p>You may keep this structure and the Developer Resources in mind as reference to edit the existing Constructs or make your own from scratch. Happy
+    tinkering!</p>
+
+    <a href="#">Go back to top</a>
+</div>
+
+{%endblock%}

@@ -1,0 +1,55 @@
+{% extends "src/html/main.njk" %} {% block content %}
+
+<div style="width: 82%">
+  <h1>Streaming software set-up</h1>
+  <h2>OBS/XSplit</h2>
+  <em>This guide assumes you're using a Screen Capture and that the tracking area is your entire screen, at a 16:9 aspect ratio.</em>
+  <ol>
+    <li>
+      <strong>Create a Browser Source (Website in XSplit) with the URL pointing to the
+      URL field of the Large Hand (accessible from the Home page.)</strong><br /><br/>
+      <img src="./bsource1.png" alt="Browser Source: URL" /> <br /><br/>
+
+      Put this CSS inside the Custom CSS field to get the transparent background
+      (enable Custom CSS in XSplit):
+      <pre class="codeblock"><code class="language-css match-braces rainbow-braces">body, html {
+    background-color: rgba(0, 0, 0, 0);
+    margin: 0px auto;
+    overflow: hidden;
+}</code></pre>
+      <br />
+    </li>
+    <li>
+        <strong>
+      Move and adjust the Browser Source/Webpage however you desire over your Screen Capture/Window Capture.<br/>
+      </strong>
+      <br/>
+      For OBS, you may do the following:
+      <br/><br/>
+      <ol type="I">
+        <li>
+          Paste the Transform on the Browser Source with your Large Hand
+          construct to give it the size and ratio of the Screen Capture.<br /><br/>
+          <img src="./tf2.png" alt="Patsing Transform" /><br /><br/>
+          <img src="./tf3.png" alt="Patsing Transform Results" />
+          <br /><br/>
+        </li>
+        <li>
+          Copy the Transform of the Screen Capture you want to show the Hand
+          on.<br /><br/>
+          <img src="./tf1.png" alt="Copying Transform" />
+          <br/>
+          <br />
+        </li>
+      </ol>
+    </li>
+    <li><strong>
+      Repeat the steps for the Small Hand, if available and if you want.<br/>
+    </strong><br/>
+    Remember that the Small construct is intended to be placed over your own VTuber/PNGTuber avatar.
+  </ol>
+
+  <a href="#">Go back to top</a>
+</div>
+
+{%endblock%}

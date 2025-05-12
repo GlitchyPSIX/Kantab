@@ -1,0 +1,53 @@
+{% extends "src/html/main.njk" %} {%block content%}
+<div style="display: flex; flex-direction: column; align-items: center">
+  <h1>Kantab Server is operational.</h1>
+  <h3>Current Construct is: <span id="constructName">...</span></h3>
+  <div style="padding: 1em; display: flex">
+    <button id="largeCopy" class="btn" style="margin-right: 1em">
+      Copy link to Large Hand
+    </button>
+    <button id="smallCopy" class="btn">Copy link to Tablet Hand</button>
+  </div>
+  <p style="font-size: 0.9em; text-align: center">
+    Tip: Add "?s=2" without quotes to the end of the link to scale the Construct
+    by 2x. Change that number if you wish.<br />This number overrides the scale
+    in Kantab's Control Panel, per link.
+  </p>
+  <p>Need more help and tips? Check out the Guide in the sidebar.</p>
+</div>
+<script>
+  let constructNameSpan = document.getElementById("constructName");
+  let largeCopyBtn = document.getElementById("largeCopy");
+  let smallCopyBtn = document.getElementById("smallCopy");
+  (async () => {
+    try {
+      let kantabConstructMeta = await (
+        await fetch("/settings/construct")
+      ).json()
+      constructNameSpan.innerText = kantabConstructMeta.name
+      if (!kantabConstructMeta.constructs.large) {
+        largeCopyBtn.style.display = "none"
+      }
+      
+      if (!kantabConstructMeta.constructs.small) {
+        smallCopyBtn.style.display = "none";
+      }
+    } catch {
+      constructNameSpan.innerText = "??? (error)"
+      largeCopyBtn.style.display = "none"
+      smallCopyBtn.style.display = "none"
+    }
+  })();
+
+  largeCopyBtn.addEventListener("click", () => copyUrl("large"));
+  smallCopyBtn.addEventListener("click", () => copyUrl("small"));
+
+  const copyUrl = (name) => {
+    navigator.clipboard.writeText(
+      new URL(`./${name}`, location.href.split("?")[0])
+    )
+  }
+
+  document.getElementById("#constructName")
+</script>
+{%endblock%}

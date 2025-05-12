@@ -1,0 +1,1 @@
+This "Constructs" folder is not respected by the final Kantab application. It's here only to test Construct functionality when the pages are not being served by Kantab.

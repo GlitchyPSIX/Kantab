@@ -1,0 +1,9 @@
+{
+    "name": "Sample Test Construct",
+    "author": "GlitchyPSI",
+    "description": "Not much here besides testing. Kind of messy.",
+    "constructs": {
+        "large": "large.json",
+        "small": null
+    }
+}

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kantab - Large Full Screen</title>
+    <style>
+      body, html{
+        background-color: black;
+        padding: 0;
+        margin: 0;
+        width: 100vw;
+        min-height: 100vh;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="module">
+      import {initView} from "/common/htmlClient.js";
+      initView("large");
+    </script>
+  </body>
+</html>

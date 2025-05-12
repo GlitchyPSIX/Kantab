@@ -1,0 +1,95 @@
+{% extends "src/html/main.njk" %} {% block content %}
+
+<div style="width:82%;">
+    <h1>Guidebook: Kantab Setup for New/Spud Tablet users</h1>
+    <p><i>This is an easy start guide intended to help first time users or users that come from Spud Tablet set up
+        Kantab quickly. You can find out more about how to further configure Kantab, including streaming software setup,
+        in the other sections of the Guidebook.</i></p>
+    <div>
+        <p>
+            When opening Kantab, you'll see a screen similar to the below:
+        </p>
+        <img src="./gui.png" alt="Kantab GUI" />
+        <p>
+            This is where you'll control the Kantab Server. Well... this page requires the Server to be turned on, so we
+            got that down!<br>
+            With the server on, you'll be able to access this guidebook and the URLs for the hand views, both the large
+            and the tablet one.<br>
+            <strong>The pages will not load if the Server is off</strong> (including hand views). <strong>Only</strong>
+            turn off the Server when you fully stop using it, or close Kantab altogether.
+        </p>
+        <p>Now, with it open, let's set up the tracking region for the arm. If you have a second screen, you'll want to have your entire second screen area being tracked.</p>
+        <p>To set up the tracking region, you go to the Server Settings tab.</p>
+        <img src="./serversetts.png" alt="Kantab GUI: Server Settings" />
+        <p><strong>Before you do anything,</strong> drag the Control Panel to the screen you want Kantab to track as reference. <strong>Try to line up the window with the image above to keep reading.</strong></p>
+        <p>After you do that, you may click on the <img style="width: 30px;" src="./scissorreg.png" alt="Set Base Screen Region" /> Set Base Screen Region button.</p>
+        <p>When you click it, the entire screen that the Panel Control is in will turn a bit bluish, and will prevent clicking anything while you're setting up the region. It's see through, though, so you should still be seeing this. Hi!</p>
+        <p>You will do two clicks to set the tracking region. You will first click the <strong>top-left</strong> corner of your tracking area, while the button glows <strong>GREEN</strong> below the blue veil, and then you will click the <strong>bottom-right</strong> area while the button glows <strong>RED</strong> below the blue veil.</p>
+        <p>It's OK if you're off by just a few pixels, but try to be as accurate as possible. I recommend using the mouse (and Mouse/WinTab Pen State Provider) for this task.<br>
+        If you are unsatisfied with your region, you can click the <img style="width: 30px;" src="./scissorreg.png" alt="Set Base Screen Region" /> Set Base Screen Region button again. Click Undo to revert the changes that were not saved.<br>
+        When you are fully done, click the Save button to let Kantab know that this is the region you want to use.</p>
+        <p><strong>Let's go back to the Kantab Server tab.</strong> You'll notice there is a Large Arm URL there.</p>
+        <p>
+            Right now, if you access the arm URL in your browser, you will likely see something like a blue hand and
+            arm holding a white pen.
+        </p>
+        <img src="./curlyhand.png" alt="Curly's Arm" style="width: 400px;" />
+        <p>That's <strong>Curly</strong>'s arm! Her arm is a default Kantab Construct.</p>
+        <div class="guidebook-highlight">
+            <span class="info">Info</span><br>
+            a <strong>Construct</strong> is a "definition" of the arm.<br>
+            It includes info like its name and description, layers for the hand, its sprites, how each layer rotates, if
+            it rotates using your pen's tilt or not, and so on.<br>
+            Kantab comes with a few Constructs, some themed after Curly's arm.
+        </div>
+        <p>You can see your Constructs in the <strong>Construct Settings</strong> tab.</p>
+        <img src="./constructtab.png" alt="Kantab GUI: Construct tab" />
+        <p>Here you will see all the Constructs that are in your <strong>Constructs</strong> folder. Whenever you add a
+            Construct, if Kantab is open, remember to hit "Reload Constructs"!</p>
+        <p>Now would be a good moment to teach you how to change the Constructs up so you can have your own hand in
+            there.</p>
+        <p>Your <strong>Constructs</strong> folder is located right next to the Kantab executable, so, here:</p>
+        <img src="./constructfiles.png" alt="File Explorer: Construct Folder" />
+        <p>Inside that folder, there will be a subfolder for each Construct.</p>
+        <img src="./constructfolders.png" alt="File Explorer: Construct Folders" />
+        <p>
+        <code style="display:inline-block;">curly-spud</code> is the folder for the "Curly - Spud Compatible" Construct.
+        Let's see what's inside...
+        </p>
+        <img src="./curlyfiles.png" alt="File Explorer: Curly's assets" />
+        <p>There's the sprites, and two metadata files.<br>
+            The "<strong>kantab.json</strong>" file is the main metadata file. It tells Kantab where the large hand view
+            and the tablet view are, the name and description.<br>
+            The "<strong>large.json</strong>" file is the Large version of the Construct. This file tells the web-view
+            what to display as the hand when entering the Large view URL. This is the file that defines the layers,
+            rotation type, etc.<br>
+            There's also a "<strong>small.json</strong>, but not present in this screenshot. :P - That works just like large.json, except it's for the Small (tablet) view URL. Not all Constructs have a small view."</p>
+        <p>You can modify these files. I would recommend making a backup of the <code
+                style="font-family: monospace;">curly-spud</code> folder however. It's a good base Construct.<br>
+            Remember to rename your folder and the <code>kantab.json</code> info (using a text editor!) to something different, so you don't get lost.<br></p>
+        <p>At this point, you can do a few things to get your hand in...</p>
+        <ul>
+            <li>
+                <p><strong>If you use Spud Tablet...</strong> just drag over your PNG files from Spud Tablet's Override
+                    folder and replace them here. Then, modify <em>kantab.json</em> with your own metadata so you can
+                    recognize it in the Construct selector.</p>
+            </li>
+            <li>
+                <p><strong>if you don't use Spud Tablet, and or Kantab is your first time with these tools...</strong>
+                    you can directly modify the PNG files for Arm and Hand yourself. With the program, there is a .PSD
+                    template that you can use to aid yourself.<br>
+                    You can also be super brave and read the <em>large.json</em> file... if you manage to understand it
+                    (or read the Developer Resources), you can edit it add your own layers, rotating elements, color
+                    shifting elements...<br>
+                    Oh, yeah. Don't forget to edit the metadata.</p>
+            </li>
+        </ul>
+        <p>After you've edited your Construct, go to the Construct Settings, hit Reload Constructs, select your
+            Construct, and save.</p>
+        <p>When you do that, the browser reloads itself and your selected Construct will be the one showing up. Happy
+            drawing!</p>
+        <a href="#">Go back to top</a>
+    </div>
+</div>
+
+{%endblock%}

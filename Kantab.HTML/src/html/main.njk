@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kantab Start</title>
+    <link rel="stylesheet" href="/css/kantab.css" />
+    <link rel="stylesheet" href="/css/prism.css" />
+    <script src="%BASE_URL%/js/prism.js"></script>
+</head>
+
+<body>
+    <a href="%BASE_URL%"><img src="/img/ktablogo.png" alt="Kantab Logo" class="ktab-logo" /></a>
+    <div class="main-grid">
+        <aside class="islet" style="height: min-content;">
+            <nav class="navi">
+                <ul>
+                    <li>
+                        <a href="%BASE_URL%">
+                            Home
+                        </a>
+                    </li>
+                    <li>
+                        <a href="%BASE_URL%guide/">
+                            Guide
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="islet">
+                    {% block content %}
+                    {% endblock %}    
+                    {% block curly %}
+                    <i class="curly"></i>
+                    {% endblock %}              
+        </main>
+    </div>
+</body>
+
+</html>

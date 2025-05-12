@@ -1,0 +1,46 @@
+{% extends "src/html/main.njk" %} {% block content %}
+
+<div style="width: 82%">
+  <h1>Glossary of Terms</h1>
+    <ul>
+        <li>
+            <h2>Base Screen Region</h2>
+            <p>The tracking area within a screen that Kantab uses to determine the position of the hand on screen.</p>
+        </li>
+        <li>
+            <h2>JSON</h2>
+            <p>Stands for <em><strong>J</strong>ava<strong>S</strong>cript <strong>O</strong>bject <strong>N</strong>otation</em>. It's the text format in which the Configuration file for Kantab and Construct definitions are written in.</em></p>
+        </li>
+        <li>
+            <h2>Kantab Construct</h2>
+            <p>Often also just called <em>Construct</em>, refers to a set of files that define the layers of a "hand skin" and how those layers react to positioning and tablet pressure inputs. </p>
+        </li>
+        <li>
+            <h2>Kantab Server</h2>
+            <p>The web server integrated within Kantab that... <em>serves</em> pages like the hand views and this guide.</p>
+        </li>
+        <li>
+            <h2>Large Hand</h2>
+            <p>The part of a Construct that shows the hand that is meant to be overlaid over the screen in your streaming software.</p>
+        </li>
+        <li>
+            <h2>OTD (<a href="https://opentabletdriver.net">OpenTabletDriver</a>)</h2>
+            <p>An open-source tablet driver that is extensible with plugins made in C#.</p>
+        </li>
+        <li>
+            <h2>Pen State Provider</h2>
+            <p>An "adapter" which Kantab uses to get pen position and pen pressure info.</p>
+        </li>
+        <li>
+            <h2>Relay Plugin</h2>
+            <p>A plugin for an external application that is able to relay pen position and pen pressure info to Kantab in the Relay mode.</p>
+        </li>
+        <li>
+            <h2>Small Hand</h2>
+            <p>The part of a Construct that shows the hand that is meant to be overlaid over your avatar in your streaming software. Usually optional.</p>
+        </li>
+    </ul>
+  <a href="#">Go back to top</a>
+</div>
+
+{%endblock%}

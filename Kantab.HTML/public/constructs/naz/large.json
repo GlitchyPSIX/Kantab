@@ -1,0 +1,71 @@
+{
+    "staticLayers": [
+        {
+            "name": "tablaise",
+            "behind": true,
+            "mainTexturePath": "tablaise.png",
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "pivot": {
+                "x": 0,
+                "y": 0
+            },
+            "scale": {
+                "x": 5,
+                "y": 5
+            }
+        }
+    ],
+    "layers": [
+        {
+            "name": "ample",
+            "mainTexturePath": "ample.png",
+            "offset": {
+                "x": 218,
+                "y": 555
+            },
+            "pivot": {
+                "x": 331,
+                "y": 331
+            }
+        },
+        {
+            "name": "pen",
+            "mainTexturePath": "/constructs/naz/tool.png",
+            "offset": {
+                "x": -2,
+                "y": 829
+            },
+            "pivot": {
+                "x": 12,
+                "y": 1048
+            }
+        }
+    ],
+    "tiltStyle": "spud",
+    "baseOffset": {
+        "x": -2,
+        "y": 829
+    },
+    "reactive": {
+        "xy": {
+            "scaleX": {
+                "min": 1.2,
+                "max": 0.8
+            },
+            "scaleY": {
+                "min": 1,
+                "max": 1
+            }
+        }
+    },
+    "confineQuad":{
+        "topLeft": { "x": 765, "y": 1030 },
+        "topRight": { "x": 3630, "y": 1760 },
+        "bottomRight": { "x": 4140, "y": 3220 },
+        "bottomLeft": { "x": 680, "y": 2930 }
+    },
+    "relativeConfine": false
+}

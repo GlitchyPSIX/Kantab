@@ -1,0 +1,291 @@
+{% extends "src/html/main.njk" %} {% block content %}
+
+<div style="width: 82%">
+  <h1><a href="../">Developer Resources</a> → JSON Schemas</h1>
+    <p>This page compiles resources that are useful to create your own Constructs from scratch or implement your own Kantab Client.</p>
+
+    <h2 id="KantabFile">Construct Manifest (kantab.json)</h2>
+    <em>The main file that defines all the metadata for a Construct. This file MUST exist for a Construct to be valid.</em>
+    <pre class="codeblock"><code class="language-json match-braces rainbow-braces">{
+    name: string,
+    author: string,
+    description: string,
+    constructs: { 
+        large?: string,
+        small?: string
+    }
+}</code></pre>
+    <ul>
+        <li>
+            <strong>name</strong> <em class="type">string</em>
+            <p>Name of the Construct, shown in the Control Panel GUI/QuickStart.</p>
+        </li>
+        <li>
+            <strong>author</strong> <em class="type">string</em>
+            <p>Name of the Construct's author, shown in the Control Panel GUI/QuickStart.</p>
+        </li>
+        <li>
+            <strong>description</strong> <em class="type">string</em>
+            <p>Description of the Construct, shown in the Control Panel GUI.</p>
+        </li>
+        <li>
+            <strong>constructs</strong> <em class="type">object</em>
+            <p>Constructs associated with this Manifest.</p>
+            <details><summary><em>Fields inside <code>constructs</code></em></summary><br/>
+            <ul>
+                <li>
+                    <strong>large</strong> <em class="type">string [optional]</em>
+                    <p>How the Construct SON for the Large Hand is called. Such JSON must be in the same folder as the Manifest.</p>
+                    <br/>
+                </li>
+                <li>
+                    <strong>small</strong> <em class="type">string [optional]</em>
+                    <p>How the Construct SON for the Small Hand is called. Such JSON must be in the same folder as the Manifest.</p>
+                </li>
+            </ul>
+            </details>
+        </li>
+    </ul>
+
+    <h2>Construct Data Types (large.json/small.json JSON)</h2>
+    <h3 id="KantabConstruct">KantabConstruct</h3>
+    <em>The data type of a Construct's hand definition. Used in the Large and Small constructs.</em>
+    <pre class="codeblock"><code class="language-json match-braces rainbow-braces">{
+    staticLayers: KantabConstructLayer[],
+    layers: KantabConstructLayer[],
+    tiltStyle: string,
+    baseOffset: Vec2,
+    reactive?: KantabReactive,
+    confineQuad?: KantabQuad,
+    relativeConfine: boolean
+}</code></pre>
+    <ul>
+        <li>
+            <strong>staticLayers</strong> <em class="type">Array of KantabConstructLayer</em>
+            <p>A collection of KantabConstructLayer that does not move with the pen position.</p>
+        </li>
+        <li>
+            <strong>layers</strong> <em class="type">Array of KantabConstructLayer</em>
+            <p>A collection of KantabConstructLayer that moves with the pen position.</p>
+        </li>
+        <li>
+            <strong>tiltStyle</strong> <em class="type">string (strict values)</em>
+            <p>The tilting style of the Construct.</p>
+            <details><summary><em>Possible values for <code>tiltStyle</code></em></summary><br/>
+            <ul>
+                <li>
+                    <strong><code>none</code></strong>
+                    <p>The Construct does not tilt at all.</p>
+                </li>
+                <li>
+                    <strong><code>kantab-sim</code></strong>
+                    <p>The Construct simulates tilting using the X/Y position, but if tilt data is provided along with position, it will use the tilt instead.</p>
+                </li>
+                <li>
+                    <strong><code>kantab-strict</code></strong>
+                    <p>The Construct only tilts if tilt data is provided along with the position, using it.</p>
+                </li>
+                <li>
+                    <strong><code>spud</code></strong>
+                    <p>The Construct tilts using the X/Y position only, using the same formula used in VirtualGraves' Spud Tablet.</p>
+                </li>
+            </ul>
+            </details>
+            <br/>
+        </li>
+        <li>
+            <strong>baseOffset</strong> <em class="type">Vec2</em>
+            <p>Offset (rotation center) of the whole Construct in relation to the orign (top left)</p>
+        </li>
+        <li>
+            <strong>reactive</strong> <em class="type">KantabReactive [optional]</em>
+            <p>KantabReactive that defines how the Construct will react to some inputs.</p>
+        </li>
+        <li>
+            <strong>confineQuad</strong> <em class="type">KantabQuad [optional]</em>
+            <p>KantabQuad that defines the area that the Construct's position will be mapped to, like, for example, a slanted surface.</p>
+        </li>
+        <li>
+            <strong>relativeConfine</strong> <em class="type">boolean [optional, defaults to false]</em>
+            <p>Whether the coordinates specified in <code>confineQuad</code> are interpreted as normalized coordinates (0, 1) or absolute pixel coordinates.</p>
+        </li>
+    </ul>
+
+    <h3 id="KantabConstructLayer">KantabConstructLayer</h3>
+    <em>A layer that contains an image element inside a KantabConstruct.</em>
+    <pre class="codeblock"><code class="language-json match-braces rainbow-braces">{
+    name: string,
+    mainTexturePath: string,
+    offset: Vec2,
+    pivot: Vec2,
+    scale: Vec2,
+    rotation?: {
+        type: string,
+        mult: number,
+        range: KantabRange?,
+    },
+    tint?: KantabTint,
+    pressureRange?: KantabRange,
+    behind: boolean
+}</code></pre>
+    <ul>
+        <li>
+            <strong>name</strong> <em class="type">string</em>
+            <p>Name of the layer. Mainly used for identification.</p>
+        </li>
+        <li>
+            <strong>mainTexturePath</strong> <em class="type">string</em>
+            <p>Path of the texture that this layer shows. Path is relative to the Construct's folder, and subfolders are supported.</p>
+        </li>
+        <li>
+            <strong>offset</strong> <em class="type">Vec2</em>
+            <p>Offsets the position of the layer after pivot in pixels.</p>
+        </li>
+        <li>
+            <strong>pivot</strong> <em class="type">Vec2</em>
+            <p>Rotation and scaling center of the layer in pixels.</p>
+        </li>
+        <li>
+            <strong>scale</strong> <em class="type">Vec2</em>
+            <p>Scale of the layer.</p>
+        </li>
+        <li>
+            <strong>rotation</strong> <em class="type">object [optional]</em>
+            <p>Rotation settings for this specific layer.</p>
+            <details><summary><em>Fields inside <code>rotation</code></em></summary><br/>
+            <ul>
+                <li>
+                    <strong>type</strong> <em class="type">string (strict values)</em>
+                    <p>The source type for the rotation.</p>
+                    <details><summary><em>Possible values for <code>type</code></em></summary><br/>
+                        <ul>
+                            <li>
+                                <strong><code>general</code></strong>
+                                <p>Rotation is dictated by the Construct's general tilt.</p>
+                            </li>
+                            <li>
+                                <strong><code>pressure</code></strong>
+                                <p>Rotation is dictated by pen pressure.</p>
+                            </li>
+                        </ul>
+                    
+                    </details>
+                    <br/>
+                </li>
+                <li>
+                    <strong>mult</strong> <em class="type">number</em>
+                    <p>The multiplier to apply to the rotation's input.</p>
+                </li>
+                <li>
+                    <strong>range</strong> <em class="type">KantabRange [optional]</em>
+                    <p>When <code>type</code> is <code>general</code>, the output rotation is clamped to this range in degrees.<br/><br/>
+                    When <code>type</code> is <code>pressure</code>, the interpolated rotation is changed from 0º - 360º to the specified range, and can be overshot by a multiplied input.</p>
+                </li>
+            </ul>
+            </details>
+        </li>
+        <br/>
+        <li>
+            <strong>tint</strong> <em class="type">KantabTint [optional]</em>
+            <p>Tinting settings for this layer</p>
+        </li>
+        <li>
+            <strong>pressureRange</strong> <em class="type">KantabRange [optional]</em>
+            <p>Pressure level range at which this Layer will be visible</p>
+        </li>
+        <li>
+            <strong>behind</strong> <em class="type">boolean [optional]</em>
+            <p>Only for Layers in a Construct's staticLayers: Places this layer behind the moving layers.</p>
+        </li>
+        </ul>
+
+    <h3 id="Vec2">Vec2</h3>
+    <em>Vector2. Has an X and Y component.</em>
+    <pre class="codeblock"><code class="language-json match-braces rainbow-braces">{
+    x: number,
+    y: number
+}</code></pre>
+
+    <h3 id="KantabReactive">KantabReactive</h3>
+    <em>Reactivity settings for the entire Construct.</em>
+    <pre class="codeblock"><code class="language-json match-braces rainbow-braces">{
+    lifted?: {
+        offset: KantabVec2
+    }
+    xy?: {
+        scaleX: KantabRange,
+        scaleY: KantabRange
+    }
+}</code></pre>
+    <ul>
+        <li>
+            <strong>lifted</strong> <em class="type">object [optional]</em>
+            <p>Reactive Settings for when the pen is lifted.</p>
+            <details><summary><em>Fields inside <code>lifted</code></em></summary><br/>
+            <ul>
+                <li>
+                    <strong>offset</strong> <em class="type">Vec2</em>
+                    <p>Additional offset to apply to the moving Layers of the Construct when the pen is lifted.</p>
+                </li>
+            </ul>
+            </details>
+        </li>
+        <br/>
+        <li>
+            <strong>xy</strong> <em class="type">object [optional]</em>
+            <p>Reactive Settings on the position of the pen in accordance to the edges of the Base Screen Region.</p>
+            <details><summary><em>Fields inside <code>xy</code></em></summary><br/>
+            <ul>
+                <li>
+                    <strong>scaleX</strong> <em class="type">KantabRange</em>
+                    <p>Scaling to apply when the pen is on the leftmost side and the rightmost side of the tracking area, usually used for a depth effect.</p>
+                </li>
+                <li>
+                    <strong>scaleY</strong> <em class="type">KantabRange</em>
+                    <p>Scaling to apply when the pen is on the topmost side and the bottom side of the tracking area, usually used for a depth effect.</p>
+                </li>
+            </ul>
+            </details>
+        </li>
+        <br/>
+    </ul>
+
+    <h3 id="KantabQuad">KantabQuad</h3>
+    <em>A four-point polygon that is usually used to define a mapped area.</em>
+    <pre class="codeblock"><code class="language-json match-braces rainbow-braces">{
+    topLeft: Vec2,
+    topRight: Vec2,
+    bottomLeft: Vec2,
+    bottomRight: Vec2
+}</code></pre>
+
+    <h3 id="KantabTint">KantabTint</h3>
+    <em>Tint settings for a Layer.</em>
+    <pre class="codeblock"><code class="language-json match-braces rainbow-braces">{
+    colorFrom: string,
+    colorTo?: string,
+    range: KantabRange
+}</code></pre>
+    <ul>
+        <li>
+            <strong>colorFrom</strong> <em class="type">string [interpreted as hex RGB24 color with the format #RRGGBB]</em>
+            <p>Color to start at.</p>
+        </li>
+        <br/>
+        <li>
+            <strong>colorTo</strong> <em class="type">string [optional] [interpreted as hex RGB24 color with the format #RRGGBB]</em>
+            <p>Color to end at. If omitted, colorFrom will invariably tint the layer's image.</p>
+        </li>
+        <br/>
+        <li>
+            <strong>range</strong> <em class="type">KantabRange</em>
+            <p>At which pressure ranges (0-1) to do the color gradient, interpolating as pressure increases towards either end of the range.<br/>
+            If colorTo is omitted, this has no effect and can be omitted.</p>
+        </li>
+        <br/>
+    </ul>
+
+  <a href="#">Go back to top</a>
+</div>
+
+{%endblock%}

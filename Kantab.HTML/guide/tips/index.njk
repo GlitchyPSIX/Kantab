@@ -1,0 +1,20 @@
+{% extends "src/html/main.njk" %} {% block content %}
+
+<div style="width: 82%">
+  <h1>Extra tips</h1>
+  <h2>Individual Scaling</h2>
+  <p>Add <code>?s=x</code>—where <code>x</code> is any number—to the URL you put in your streaming software to scale a URL individually.
+  This will ignore the Construct Scale settings in the Kantab Control Panel for that URL as long as the <code>s</code> parameter is present..</p>
+  <h2>The Confine Quad property: Potential Lefty Mode</h2>
+  <p>If you've gone through the Developer Resources, you'll have found out that you can specify 
+    a four-point quad to serve as confinement for the moving layers of a Construct.<br />
+    This can be any four points, mind you, by default in absolute pixel coordinates. You can even invert 
+    the X axis or the Y axis by setting the left corners to the right corners or top corners to bottom corners respectively.</p>
+  <h2>The Confine Quad property: Relative Confinement</h2>
+  <p>Sure, you can define specific confinement points in pixel coordinates but that doesn't scale well, does it?<br />
+  The other property called <code>relativeConfine</code> allows you to specify whether the confinement is interptered in terms of
+  screen space, 0-1 in both axes.<br/>
+  Inverting an axis with this enabled is as easy as specifying 1 and 0 to the opposite ends.</p>
+</div>
+
+{% endblock %}

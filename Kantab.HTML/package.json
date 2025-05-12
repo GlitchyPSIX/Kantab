@@ -1,0 +1,20 @@
+{
+  "name": "kantab.html",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port=4000 --base=./",
+    "build": "vite build --base=/views",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.1.4",
+    "vituum": "^1.1.1"
+  },
+  "dependencies": {
+    "@vituum/vite-plugin-nunjucks": "^1.1.0",
+    "pixi.js": "^8.1.6",
+    "simple-homography": "1.0.2"
+  }
+}

@@ -1,0 +1,214 @@
+{% extends "src/html/main.njk" %} {% block content %}
+
+<div style="width: 82%">
+    <h1><a href="../">Developer Resources</a> → Protocol Notes</h1>
+    <em>These protocol notes are taken straight from the file in which they were first drafted.</em>
+    <pre class="codeblock"><code class="lang-css">
+Kantab Protocol Specification
+=============================
+
+This document aims to explain the protocol Kantab's server uses to communicate with the client.
+Kantab uses WebSockets, so the information will have to be deserialized from its byte array equivalent.
+
+Every Kantab message starts with a byte which defines its &quot;opcode&quot;. Opcodes are separated between client and server.
+Server opcodes are referred in this documentation as S, while client opcodes are referred in this documentation as C.
+Messages are displayed in byte separations, hexadecimal.
+Any values not enclosed within brackets ( [] ) shall be treated as-is in hexadecimal.
+Length is in decimal.
+
+This repo is supposed to be the reference implementation, so this document also serves as a checklist to determine protocol completeness.
+✅ will be next to the message if it's currently implemented.
+⚠ will be next to the message if it's only partially implemented.
+
+Server Messages
+===============
+
+S 01: Ping ✅
+
+[len: 2] 
+## 00
+
+Heartbeat message. Client MUST respond to this with &quot;C 01: Pong&quot;.
+If 5 heartbeats miss, the client is disconnected.
+
+--------------------------------------------------------------------
+
+S 02: Hello ✅
+
+[len: 2] 
+## 00
+
+Message sent to the client upon connecting. Client MUST respond with &quot;C 02: Hello&quot; to signify the client is ready to start accepting
+more Kantab-specific messages. This marks the client as active, and starts the ping timer for the client.
+
+Clients failing to return &quot;02: Hello&quot; within 3 seconds are disconnected.
+
+--------------------------------------------------------------------
+
+S 03: Capabilities ✅
+
+[len: 2] 
+## [TT]
+
+TT (enum, byte): Bitfield describing the features the server supports. This bitfield is consistent with the enum &quot;ClientFeatures&quot;.
+Client MAY respond with &quot;C 03: Capabilities&quot;. The client MAY respond at any time after receiving this message as long as it is still
+responding to the heartbeat by &quot;S 01: Ping&quot;.
+
+--------------------------------------------------------------------
+
+S 04: Pen Information ✅
+
+[len: 11 or 18] 
+## 0[E] [?????????????????????]
+
+E (boolean, bit inside byte): Extended Information
+Extended Information specifies whether this information includes extra tablet attributes such as pressure and tilt.
+
+S 04-00: IF NOT EXTENDED ✅
+---
+
+[len: 11] 
+## 00 [XX XX XX XX] [YY YY YY YY] [PP]
+
+XX (float): X position (normalized between 0-1 or raw position if ABSOLUTE_POSITION is ticked on in Features)
+YY (float): Y position (normalized between 0-1 or raw position if ABSOLUTE_POSITION is ticked on in Features)
+PP (byte) : Pressure, but discrete (0 if not pressed, 1 if pressed)
+
+(0, 0) starts in the TOP LEFT CORNER.
+
+S 04-01: IF EXTENDED ✅
+---
+
+[len: 18] 
+## 01 [XX XX XX XX] [YY YY YY YY] [PP PP PP PP] [TT TT TT TT]
+
+XX, YY: Refer to S 04-00
+
+PP (float): Pressure (normalized, between 0-1, 0 being no pressure and 1 being max pressure)
+TT (float): Tilt (in degrees, normal values from -180 to 180)
+
+NOTE ABOUT TILT: It is possible that the returned value is exaggerated by drivers, but from research most tilt detection does not exceed
+80 degrees (pen angles shouldn't be sharper than that.)
+
+--------------------------------------------------------------------
+
+S FD: Consider Refreshing Assets ✅
+
+[len: 2] 
+## 00
+
+Sent to the client when the server thinks it's prudent to refresh the assets provided by its webserver.
+The client SHOULD respect this message and refresh assets or the entire setup (page), either refreshing automatically or
+requesting the user to reload.
+
+--------------------------------------------------------------------
+
+S FE: Whoops ✅
+
+[len: 2]
+## 00
+
+Sent to the client when there's a protocol violation (unknown opcode, wrong values, etc).
+If the client receives this message as a response to a sent command, the client MUST NOT repeat the same request.
+Too many &quot;whoops&quot; between heartbeats and the client is disconnected.
+
+--------------------------------------------------------------------
+
+S FF: Goodbye ⚠
+
+[len: 2]
+## [BB]
+
+BB: 01 if the client misbehaved and was the reason for disconnect.
+
+Sent to the client right before asking the websocket to close.
+If [BB] is 01, the client was misbehaving (too many &quot;S FE: Whoops&quot;).
+
+In relation to &quot;C FF: End Of The Line&quot;:
+If willfully disconnecting, the server will send &quot;S FF: Goodbye&quot; to gracefully terminate the connection.
+If errored out, the server will send nothing back and the server application should notify the user that something went wrong.
+
+--------------------------------------------------------------------
+
+Client Messages
+===============
+
+C 01: Pong ✅
+
+[len: 2] 
+## 00
+
+Sent to the server in response to &quot;S 01: Ping&quot;.
+
+--------------------------------------------------------------------
+
+C 02: Hello ✅
+
+[len: 2] 
+## 00
+
+Sent to the server to signify the client is ready to accept messages, sent after &quot;S 02: Hello&quot;. MUST be sent immediately after receiving S 02.
+
+--------------------------------------------------------------------
+
+C 03: Capabilities ⚠
+
+[len: 2] 
+## [CC]
+
+CC: Client's requested capabilities. These are consistent with the &quot;ClientFeatures&quot; enum.
+
+Sent to the server to specify what the client wants from the server. Ideally this value is AND'd with the server's equivalent &quot;S 03: Welcome&quot;.
+
+--------------------------------------------------------------------
+
+C 04: Pen Information ✅
+
+[len: 10 or 18] 
+## 0[E] [?????????????????????]
+
+E (boolean, bit inside byte): Extended Information
+Extended Information specifies whether this information includes extra tablet attributes such as pressure and tilt.
+
+The structure is the same as in &quot;S 04: Pen Information&quot;, but the client MUST only send this when they are a Relay Authority (RELAY_AUTHORITY
+flag given when connecting), otherwise server will respond with &quot;S FE: Whoops&quot;.
+
+--------------------------------------------------------------------
+
+C FF: End Of The Line ✅ (⚠ for server handling)
+
+[len: 2]
+## [EE]
+
+EE: 01 if the client requested immediate disconnection due to a hard refresh, 02 if it was because of an error.
+
+Sent to the server when the client willfully requests a disconnect from the server.
+The client SHOULD NOT disconnect immediately after sending this: graceful disconnection is done only when &quot;S FF: Goodbye&quot; is received.
+If [EE] is 01 or 02 however, &quot;S FF: Goodbye&quot; is not sent back and it can disconnect immediately.
+
+
+--------------------------------------------------------------------
+
+=============================
+CLIENT FEATURES ENUM BITFIELD
+=============================
+
+This enum is shared between client and server and serves to define what the server supports and what the client wants from the server.
+
+0000 0000 = No extra features
+
+0000 0001 = ABSOLUTE_POSITIONING 
+			Position will be returned in raw coordinates rather than normalized coordinates. Only used sometimes,
+			mostly by RELAY_AUTHORITY
+
+0000 0010 = EXTENDED_DATA
+			Along with Position, Pen Pressure and Tilt are sent.
+
+0000 0100 = RELAY_AUTHORITY 
+			This client wants to send positions for the server to relay rather than to receive them.
+			Servers MAY implement RELAY_AUTHORITY functionality.
+</code></pre>
+<a href="#">Go back to top</a>
+</div>
+
+{%endblock%}
